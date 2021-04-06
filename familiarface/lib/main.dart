@@ -144,9 +144,31 @@ class _CreateClassState extends State<CreateClass> {
       ),
     );
   }
+
+  //form for creating a class
+  Form AddClassForm() {
+    return Form(
+      //add form key here later when it comes to firebase
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: input() + buttons()
+      )
+    );
+  }
+
+  //input for AddClassForm
+  List<Widget> input() {
+    return [];  //come back and fill out
+  }
+
+  //buttons for AddClassForm
+  List<Widget> buttons() {
+    return [];  //come back and fill out
+  }
 }
 
 /* CLASSES FOR CREATE A CLASS END */
+
 
 /* CLASSES FOR MY CLASSES START */
 
