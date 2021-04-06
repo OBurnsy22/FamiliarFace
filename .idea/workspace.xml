@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="99c1cbd5-c3dd-4523-bbf3-bbb65df51d7a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/familiarface/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/familiarface/lib/main.dart" afterDir="false" />
-    </list>
+    <list default="true" id="99c1cbd5-c3dd-4523-bbf3-bbb65df51d7a" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,9 +37,10 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="1061" y="456" key="FileChooserDialogImpl" timestamp="1617741856195">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state x="4636" y="339" key="FileChooserDialogImpl" timestamp="1617747824624">
+      <screen x="3840" y="0" width="1920" height="1040" />
     </state>
     <state x="1061" y="456" key="FileChooserDialogImpl/0.0.2560.1400/3840.0.1920.1040@0.0.2560.1400" timestamp="1617741856195" />
+    <state x="4636" y="339" key="FileChooserDialogImpl/0.0.2560.1400/3840.0.1920.1040@3840.0.1920.1040" timestamp="1617747824624" />
   </component>
 </project>
