@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import "authentication.dart";
+import 'package:google_sign_in/google_sign_in.dart';
 
 void main() {
+  Firebase.initializeApp(); //INSERT INIT FIREBASE RIGHT HERE
   runApp(MyApp());
 }
 
@@ -118,7 +122,18 @@ class _SettingsPageState extends State<SettingsPage> {
         title: Text('Settings'),
       ),
       body: Center(
-          child: Text('Welcome to the settings page.')
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, //aligns children widgets vertically
+              children: <Widget>[
+                ElevatedButton(
+                    onPressed: () {
+                      authenticationPage.signOut;
+                      return authenticationPage();
+                    },
+                    child: Text("Logout")
+                ),
+              ],
+          ),
       ),
     );
   }
