@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import "authentication.dart";
 import 'package:google_sign_in/google_sign_in.dart';
+import 'my_globals.dart' as globals;
+
 
 void main() {
-  Firebase.initializeApp(); //INSERT INIT FIREBASE RIGHT HERE
   runApp(MyApp());
 }
 
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: authenticationPage(),//MyHomePage(title: 'FamiliarFace'),
+      home: MyHomePage(title: 'FamiliarFace'),
     );
   }
 }
@@ -55,53 +55,142 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool _initialized = false;
+
+  Future<void> initializeFlutterFire() async {
+    try {
+      //wait for firebase to initialize
+      await Firebase.initializeApp();
+    } catch(e) {
+      print(e);
+    }
+    setState(() {
+        _initialized = true;
+    });
+  }
+
+  @override
+  void initState() {
+    initializeFlutterFire();
+    super.initState();
+    FirebaseAuth.instance
+        .authStateChanges()
+        .listen((User user) {
+      if (user != null) {
+        print(user.uid);
+        setState(() {
+          globals.user=user;
+        });
+      }
+    });
+  }
+
   @override     // This method is rerun every time setState is called, for instance as done
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.settings,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsPage()),
-              );
-            }
-            ,         ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, //aligns children widgets vertically
-          children: <Widget>[
-            ElevatedButton(
+    if(_initialized) {
+      if (globals.signedIn) { //IF USER IS SIGNED IN
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(
+                  Icons.settings,
+                  color: Colors.white,
+                ),
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CreateClass()),
+                    MaterialPageRoute(builder: (context) => SettingsPage()),
                   );
-                },
-                child: Text("Create A Class")
+                }
+                ,),
+            ],
+          ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              //aligns children widgets vertically
+              children: <Widget>[
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CreateClass()),
+                      );
+                    },
+                    child: Text("Create A Class")
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyClasses()),
+                      );
+                    },
+                    child: Text("My Classes")
+                ),
+              ],
             ),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyClasses()),
-                  );
-                },
-                child: Text("My Classes")
+          ),
+        );
+      } else { //IF USER IS NOT SIGNED IN
+        return Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              //aligns children widgets vertically
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      singInErrorCatcher();
+                    },
+                    child: Text("Sign in with Google")
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        );
+      }
+    } else {
+      return CircularProgressIndicator();
+    }
   }
+
+  /* AUTHENITCATION FUNCTIONS */
+  Future<void> singInErrorCatcher() async {
+    try{
+      await googleSignIn();
+    } catch(error) {
+      print(error);
+    }
+  }
+
+  //signs the user in through google
+  Future<UserCredential> googleSignIn() async {  //look at firebase auth for reference
+    // Trigger the authentication flow
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    // Create a new credential
+    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    print(googleUser.email);
+    print(googleUser.displayName);
+
+    // Once signed in, return the UserCredential
+    setState(() {
+      globals.signedIn = true;
+    });
+
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
 }
 
 /* CLASSES FOR HOME PAGE ENDS */
@@ -127,8 +216,8 @@ class _SettingsPageState extends State<SettingsPage> {
               children: <Widget>[
                 ElevatedButton(
                     onPressed: () {
-                      authenticationPage.signOut;
-                      return authenticationPage();
+                      googleSignOut();
+                      //MyHomePage();
                     },
                     child: Text("Logout")
                 ),
@@ -137,9 +226,20 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
+
+  Future<Widget> googleSignOut() async {
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
+    setState(() {
+      globals.user = null;
+      globals.signedIn = false;
+    });
+    return MyHomePage();
+  }
 }
 
 /* CLASSES FOR SETTINGS PAGE END */
+
 
 /* CLASSES FOR CREATE A CLASS START */
 
@@ -148,7 +248,16 @@ class CreateClass extends StatefulWidget {
   _CreateClassState createState() => _CreateClassState();
 }
 
+/*
+For organizing data in firebase, create a 'collection' using the users ID so its unique.
+Each 'Collection' will be filled with 'Document', which will be the name of the classes they are in.
+Each 'Document' will have fields, that represent the students in the class, including a bool that
+is true if they are the owner of the class
+ */
 class _CreateClassState extends State<CreateClass> {
+  final form_key = GlobalKey<FormState>();
+  bool _checkbox = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,7 +265,12 @@ class _CreateClassState extends State<CreateClass> {
         title: Text('Create A Class'),
       ),
       body: Center(
-          child: Text('Welcome to create a class page')
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget> [
+              AddClassForm(),
+            ]
+          ),
       ),
     );
   }
@@ -164,7 +278,7 @@ class _CreateClassState extends State<CreateClass> {
   //form for creating a class
   Form AddClassForm() {
     return Form(
-      //add form key here later when it comes to firebase
+      key: form_key,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: input() + buttons()
@@ -172,14 +286,60 @@ class _CreateClassState extends State<CreateClass> {
     );
   }
 
+  bool validateForm(){
+    final form = form_key.currentState;
+    if(form.validate()){
+      form.save();
+      setState(() {
+        //et_shared_phrase();
+      });
+      return true;
+    }
+    return false;
+  }
+
   //input for AddClassForm
   List<Widget> input() {
-    return [];  //come back and fill out
+    return [
+      TextFormField(
+        key: Key("input_key"),
+        decoration: const InputDecoration(
+          icon: Icon(Icons.person),
+          hintText: 'CSCI 567',
+          labelText: 'Name of Class:',
+        ),
+        onSaved: (String className){
+          // This optional block of code can be used to run
+          // code when the user saves the form.
+        },
+        validator: (String className) {
+          if ((className.isEmpty)) {
+            return 'Please enter text';
+          }
+          return null;
+        },
+      ),
+      CheckboxListTile(
+          title: Text("Ensure users share same school email?"),
+          value: _checkbox,
+          onChanged: (_checkbox) {
+            setState(() {
+              _checkbox = true;
+            });
+          }
+      ),
+    ];
   }
 
   //buttons for AddClassForm
   List<Widget> buttons() {
-    return [];  //come back and fill out
+    return [
+      ElevatedButton(
+        key: Key("submit_key"),
+        onPressed: validateForm,
+        child: Text("Create Class"),
+      )
+    ];
   }
 }
 
