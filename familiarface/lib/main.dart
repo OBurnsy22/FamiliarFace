@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override     // This method is rerun every time setState is called, for instance as done
   Widget build(BuildContext context) {
     if(_initialized) { //If firebase is initialized
-      print(globals.signedIn);
+      //print(globals.signedIn);
       if (globals.signedIn && globals.user != null) { //IF USER IS SIGNED IN
         return Scaffold(
           appBar: AppBar(
@@ -367,16 +367,56 @@ class _CreateClassState extends State<CreateClass> {
         'totalGuess' : 0,
         'accuracy' : "%0",
         'students' : [],
+        'similarEmails': _checkbox,
       })
           .then((value) => print("Class database created"))
           .catchError((error) => print(error));
     }
     else { //user has a collection, so see if document already exists, if it does throw error
-      DocumentSnapshot docValue = await firestore
-          .collection(globals.user.email)
-          .doc(_class).get();
-      print("in else");
-      print(docValue.exists);
+      DocumentSnapshot document = await firestore.collection(globals.user.email).doc(_class).get();
+      if(document.exists) //if it exists throw error (can't be enrolled in duplicate classes)
+        {
+          return showDialog<void>(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('ERROR:'),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: <Widget>[
+                      Text('A user may not be enrolled in multiple classes sharing the same name.'),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('Understood'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      else
+        {
+          firestore
+              .collection(globals.user.email)
+              .doc(_class)
+              .set({
+            'isTeacher' : true,
+            'correctGuess' : 0,
+            'totalGuess' : 0,
+            'accuracy' : "%0",
+            'students' : [],
+            'similarEmails': _checkbox,
+          })
+              .then((value) => print("Class added to database"))
+              .catchError((error) => print(error));
+        }
     }
   }
 }
