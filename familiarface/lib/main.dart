@@ -89,7 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override     // This method is rerun every time setState is called, for instance as done
   Widget build(BuildContext context) {
     if(_initialized) { //If firebase is initialized
-      if (globals.signedIn) { //IF USER IS SIGNED IN
+      print(globals.signedIn);
+      if (globals.signedIn && globals.user != null) { //IF USER IS SIGNED IN
         return Scaffold(
           appBar: AppBar(
             title: Text(widget.title),
@@ -233,7 +234,10 @@ class _SettingsPageState extends State<SettingsPage> {
       globals.user = null;
       globals.signedIn = false;
     });
-    return MyHomePage();
+    await Future.delayed(Duration(seconds: 2)); //wait 2 seconds for vars to update
+    Navigator.pop(context);
+    //force a naviagtion event to go back to the homepage
+    //pop the entire stack and push the home page back onto the stack
   }
 }
 /* CLASSES FOR SETTINGS PAGE END */
@@ -349,10 +353,10 @@ class _CreateClassState extends State<CreateClass> {
     print(globals.user.email);
 
     //collection query to see if user email is already in database
-    QuerySnapshot value = await firestore
+    QuerySnapshot collValue = await firestore
       .collection(globals.user.email).get();
 
-    if(value.size == 0) //if the user doesn't have a collection, add one using their email
+    if(collValue.size == 0) //if the user doesn't have a collection, add one using their email
     {
       firestore
           .collection(globals.user.email)
@@ -368,9 +372,12 @@ class _CreateClassState extends State<CreateClass> {
           .catchError((error) => print(error));
     }
     else { //user has a collection, so see if document already exists, if it does throw error
-
+      DocumentSnapshot docValue = await firestore
+          .collection(globals.user.email)
+          .doc(_class).get();
+      print("in else");
+      print(docValue.exists);
     }
-
   }
 }
 /* CLASSES FOR CREATE A CLASS END */
