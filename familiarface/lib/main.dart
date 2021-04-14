@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'my_globals.dart' as globals;
 
@@ -37,7 +38,6 @@ class MyApp extends StatelessWidget {
 }
 
 /* CLASSES FOR HOME PAGE START */
-
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -57,6 +57,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _initialized = false;
 
+  //initializes firebase
   Future<void> initializeFlutterFire() async {
     try {
       //wait for firebase to initialize
@@ -87,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override     // This method is rerun every time setState is called, for instance as done
   Widget build(BuildContext context) {
-    if(_initialized) {
+    if(_initialized) { //If firebase is initialized
       if (globals.signedIn) { //IF USER IS SIGNED IN
         return Scaffold(
           appBar: AppBar(
@@ -110,7 +111,6 @@ class _MyHomePageState extends State<MyHomePage> {
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              //aligns children widgets vertically
               children: <Widget>[
                 ElevatedButton(
                     onPressed: () {
@@ -139,7 +139,6 @@ class _MyHomePageState extends State<MyHomePage> {
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              //aligns children widgets vertically
               children: [
                 ElevatedButton(
                     onPressed: () {
@@ -152,12 +151,14 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         );
       }
-    } else {
+    } else { //If firebase is not initialized
       return CircularProgressIndicator();
     }
   }
 
   /* AUTHENITCATION FUNCTIONS */
+  //function called before google sign in, to catch
+  //any potential sign in erros
   Future<void> singInErrorCatcher() async {
     try{
       await googleSignIn();
@@ -192,12 +193,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 }
-
 /* CLASSES FOR HOME PAGE ENDS */
 
 
 /* CLASSES FOR SETTINGS PAGE START */
-
 class SettingsPage extends StatefulWidget {
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -212,12 +211,11 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       body: Center(
           child: Column(
-              mainAxisAlignment: MainAxisAlignment.center, //aligns children widgets vertically
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 ElevatedButton(
                     onPressed: () {
                       googleSignOut();
-                      //MyHomePage();
                     },
                     child: Text("Logout")
                 ),
@@ -227,6 +225,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  //signs out current user and returns them to homepage
   Future<Widget> googleSignOut() async {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();
@@ -237,12 +236,10 @@ class _SettingsPageState extends State<SettingsPage> {
     return MyHomePage();
   }
 }
-
 /* CLASSES FOR SETTINGS PAGE END */
 
 
 /* CLASSES FOR CREATE A CLASS START */
-
 class CreateClass extends StatefulWidget {
   @override
   _CreateClassState createState() => _CreateClassState();
@@ -257,6 +254,7 @@ is true if they are the owner of the class
 class _CreateClassState extends State<CreateClass> {
   final form_key = GlobalKey<FormState>();
   bool _checkbox = false;
+  String _class = " ";
 
   @override
   Widget build(BuildContext context) {
@@ -286,12 +284,13 @@ class _CreateClassState extends State<CreateClass> {
     );
   }
 
+  //validates form for creating a class
   bool validateForm(){
     final form = form_key.currentState;
     if(form.validate()){
       form.save();
       setState(() {
-        //et_shared_phrase();
+        firebaseCreateClass();
       });
       return true;
     }
@@ -309,6 +308,7 @@ class _CreateClassState extends State<CreateClass> {
           labelText: 'Name of Class:',
         ),
         onSaved: (String className){
+          _class = className;
           // This optional block of code can be used to run
           // code when the user saves the form.
         },
@@ -322,9 +322,9 @@ class _CreateClassState extends State<CreateClass> {
       CheckboxListTile(
           title: Text("Ensure users share same school email?"),
           value: _checkbox,
-          onChanged: (_checkbox) {
+          onChanged: (bool value) {
             setState(() {
-              _checkbox = true;
+              _checkbox = value;
             });
           }
       ),
@@ -341,13 +341,42 @@ class _CreateClassState extends State<CreateClass> {
       )
     ];
   }
-}
 
+  //Creates a class for the specified user in firebase
+  Future<void> firebaseCreateClass() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    print(globals.user.uid);
+    print(globals.user.email);
+
+    //collection query to see if user email is already in database
+    QuerySnapshot value = await firestore
+      .collection(globals.user.email).get();
+
+    if(value.size == 0) //if the user doesn't have a collection, add one using their email
+    {
+      firestore
+          .collection(globals.user.email)
+          .doc(_class)
+          .set({  // use '.update' is the collections/documents already exist
+        'isTeacher' : true,
+        'correctGuess' : 0,
+        'totalGuess' : 0,
+        'accuracy' : "%0",
+        'students' : [],
+      })
+          .then((value) => print("Class database created"))
+          .catchError((error) => print(error));
+    }
+    else { //user has a collection, so see if document already exists, if it does throw error
+
+    }
+
+  }
+}
 /* CLASSES FOR CREATE A CLASS END */
 
 
 /* CLASSES FOR MY CLASSES START */
-
 class MyClasses extends StatefulWidget {
   @override
   _MyClassesState createState() => _MyClassesState();
