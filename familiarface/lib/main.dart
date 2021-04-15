@@ -430,6 +430,8 @@ class MyClasses extends StatefulWidget {
 }
 
 class _MyClassesState extends State<MyClasses> {
+  var myDocs = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -437,9 +439,25 @@ class _MyClassesState extends State<MyClasses> {
         title: Text('My Classes'),
       ),
       body: Center(
-          child: Text("Welcome to my classes page")
+          child: Text("Welcome to my classes page"),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    retrieveClasses();
+    super.initState();
+  }
+
+  Future<void> retrieveClasses() async{ //possible hint for responsive lists: https://stackoverflow.com/questions/51415556/flutter-listview-item-click-listener/52771937
+    QuerySnapshot snap = await FirebaseFirestore.instance.collection(globals.user.email).get();
+
+    //loops through all documents, appending their names to the myDocs list
+    snap.docs.forEach((element) {
+      myDocs.add(element.id);
+    });
+    print(myDocs.length);
   }
 }
 
