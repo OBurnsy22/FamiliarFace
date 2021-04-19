@@ -447,9 +447,14 @@ class _MyClassesState extends State<MyClasses> {
           itemCount: allClasses.length,
           itemBuilder: (context, index) {
             var name = allClasses[index];
-
             return ListTile(
               title: Text(name.id),
+              onTap:() {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => classView(class_ : allClasses[index])),
+                );
+              }
             );
           },
         ),
@@ -481,9 +486,26 @@ class _MyClassesState extends State<MyClasses> {
 
 /* CLASSES FOR CLASS VIEW START */
 class classView extends StatelessWidget {
+  final QueryDocumentSnapshot class_;
+
+  //constructor that requires a QueryDocumentSnapshot
+  classView({Key key, @required this.class_}) : super(key: key);
+
   @override
   Widget build(BuildContext context){
-
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(class_.id),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("hello"),
+          ]
+        ),
+      ),
+    );
   }
 }
 /* CLASSES FOR CLASS VIEW END */
