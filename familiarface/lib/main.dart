@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -431,17 +433,30 @@ class MyClasses extends StatefulWidget {
 
 class _MyClassesState extends State<MyClasses> {
   var myDocs = [];
+  List<QueryDocumentSnapshot> allClasses = [];
+  bool classesRetrieved = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('My Classes'),
-      ),
-      body: Center(
-          child: Text("Welcome to my classes page"),
-      ),
-    );
+    if(classesRetrieved) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('My Classes'),
+        ),
+        body: ListView.builder(
+          itemCount: allClasses.length,
+          itemBuilder: (context, index) {
+            var name = allClasses[index];
+
+            return ListTile(
+              title: Text(name.id),
+            );
+          },
+        ),
+      );
+    } else {
+      return CircularProgressIndicator();
+    }
   }
 
   @override
@@ -452,13 +467,23 @@ class _MyClassesState extends State<MyClasses> {
 
   Future<void> retrieveClasses() async{ //possible hint for responsive lists: https://stackoverflow.com/questions/51415556/flutter-listview-item-click-listener/52771937
     QuerySnapshot snap = await FirebaseFirestore.instance.collection(globals.user.email).get();
-
     //loops through all documents, appending their names to the myDocs list
     snap.docs.forEach((element) {
-      myDocs.add(element.id);
+      allClasses.add(element);
     });
-    print(myDocs.length);
+    print(allClasses.length);
+    setState(() {
+      classesRetrieved = true;
+    });
   }
 }
-
 /* CLASSES FOR MY CLASSES END */
+
+/* CLASSES FOR CLASS VIEW START */
+class classView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context){
+
+  }
+}
+/* CLASSES FOR CLASS VIEW END */
