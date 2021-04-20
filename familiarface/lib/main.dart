@@ -370,6 +370,7 @@ class _CreateClassState extends State<CreateClass> {
         'accuracy' : "%0",
         'students' : [],
         'similarEmails': _checkbox,
+        'gamesPlayed' : 0,
       })
           .then((value) => print("Class database created"))
           .catchError((error) => print(error));
@@ -415,6 +416,7 @@ class _CreateClassState extends State<CreateClass> {
             'accuracy' : "%0",
             'students' : [],
             'similarEmails': _checkbox,
+            'gamesPlayed' : 0,
           })
               .then((value) => print("Class added to database"))
               .catchError((error) => print(error));
@@ -480,6 +482,9 @@ class _MyClassesState extends State<MyClasses> {
     setState(() {
       classesRetrieved = true;
     });
+    /*print(allClasses[0].data());
+    Map<String, dynamic> myData = allClasses[0].data();
+    print(myData["accuracy"]); */
   }
 }
 /* CLASSES FOR MY CLASSES END */
@@ -501,7 +506,33 @@ class classView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("hello"),
+            ElevatedButton(
+              onPressed: () {
+                //navigate to play game
+              },
+              child: Text("Play Game")
+            ),
+            ElevatedButton(
+              onPressed: () {
+                //naviagete to roster
+              },
+              child: Text("View Roster")
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => scoreboard(classData : class_.data())),
+                  );
+                },
+                child: Text("View Scoreboard")
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  //naviagete to roster
+                },
+                child: Text("Delete Class")
+            ),
           ]
         ),
       ),
@@ -509,3 +540,39 @@ class classView extends StatelessWidget {
   }
 }
 /* CLASSES FOR CLASS VIEW END */
+
+
+
+/* CLASSES FOR SCOREBOARD START */
+class scoreboard extends StatelessWidget {
+ final Map<String, dynamic> classData;
+
+ //constructor that requires a Map
+ scoreboard({Key key, @required this.classData}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Scoreboard"),
+      ),
+      body: ListView(
+        children: [
+          ListTile(
+            title: Text(classData["gamesPlayed"].toString()),
+          ),
+          ListTile(
+            title: Text(classData["accuracy"].toString()),
+          ),
+          ListTile(
+            title: Text(classData["correctGuess"].toString()),
+          ),
+          ListTile(
+            title: Text(classData["totalGuess"].toString()),
+          ),
+        ],
+      )
+    );
+  }
+}
+/* CLASSES FOR SCOREBOARD END */
