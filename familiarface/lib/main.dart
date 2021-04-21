@@ -489,18 +489,31 @@ class _MyClassesState extends State<MyClasses> {
 }
 /* CLASSES FOR MY CLASSES END */
 
+
+
+
 /* CLASSES FOR CLASS VIEW START */
-class classView extends StatelessWidget {
+class classView extends StatefulWidget {
   final QueryDocumentSnapshot class_;
 
-  //constructor that requires a QueryDocumentSnapshot
   classView({Key key, @required this.class_}) : super(key: key);
+
+  @override
+  _classViewState createState() => _classViewState();
+}
+
+
+class _classViewState extends State<classView> {
+  //final QueryDocumentSnapshot class_;
+
+  //constructor that requires a QueryDocumentSnapshot
+  //classView({Key key, @required this.class_}) : super(key: key);
 
   @override
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        title: Text(class_.id),
+        title: Text(widget.class_.id),
       ),
       body: Center(
         child: Column(
@@ -522,14 +535,14 @@ class classView extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => scoreboard(classData : class_.data())),
+                    MaterialPageRoute(builder: (context) => scoreboard(classData : widget.class_.data())),
                   );
                 },
                 child: Text("View Scoreboard")
             ),
             ElevatedButton(
                 onPressed: () {
-                  //naviagete to roster
+                  deleteClassWarning(context);
                 },
                 child: Text("Delete Class")
             ),
@@ -537,6 +550,51 @@ class classView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> deleteClassWarning (BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('WARNING:'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to delete this class and all its data?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Yes'),
+              onPressed: () {
+                deleteFromFirebase();
+              },
+            ),
+            TextButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //deletes specified class from firebase
+  Future<void> deleteFromFirebase () {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    firestore.collection(globals.user.email).doc(widget.class_.id).delete();
+
+    //pop three times so we are back at the home page
+    int count = 0;
+    Navigator.popUntil(context, (route) {
+        return count++ == 3;
+    });
   }
 }
 /* CLASSES FOR CLASS VIEW END */
