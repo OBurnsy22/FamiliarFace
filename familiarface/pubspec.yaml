@@ -29,6 +29,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
   cloud_firestore: ^1.0.4
+  firebase_dynamic_links: ^2.0.2
   # below are for google sign in
   firebase_core: ^1.0.1
   firebase_auth: ^1.0.1

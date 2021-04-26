@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/services.dart';
 import 'my_globals.dart' as globals;
 
 
@@ -420,6 +422,47 @@ class _CreateClassState extends State<CreateClass> {
           })
               .then((value) => print("Class added to database"))
               .catchError((error) => print(error));
+
+          // return pop up box with firebase link to invite people
+          return showDialog<void>(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('SUCCESS:'),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: <Widget>[
+                      Text('Your class has been created! Send this link to users so they can join your class.'),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  Container(
+                    //margin: const EdgeInsets.all(15.0),
+                    //padding: const EdgeInsets.all(3.0),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blueAccent)
+                    ),
+                    child: Text("INSERT LINK HERE"),
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        Clipboard.setData(new ClipboardData(text: "REPLACE THIS WITH THE LINK"));
+                      },
+                      child: Text("Copy Link")
+                  ),
+                  Divider(),
+                  TextButton(
+                    child: Text('Ok'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
         }
     }
   }
