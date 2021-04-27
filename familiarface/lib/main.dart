@@ -45,14 +45,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
   final String title;
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -74,10 +66,35 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  //handles dynamic links
+  void initDynamicLinks() async {
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          final Uri deepLink = dynamicLink?.link;
+          if (deepLink != null) {
+            //Navigator.pushNamed(context, deepLink.path);
+            print(deepLink);
+          }
+        },
+        onError: (OnLinkErrorException e) async {
+          print('onLinkError');
+          print(e.message);
+        }
+    );
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance
+        .getInitialLink();
+    final Uri deepLink = data?.link;
+    if (deepLink != null) {
+      //Navigator.pushNamed(context, deepLink.path);
+      print(deepLink);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     initializeFlutterFire();
+    initDynamicLinks();
     FirebaseAuth.instance
         .authStateChanges()
         .listen((User user) {
@@ -487,7 +504,7 @@ class _CreateClassState extends State<CreateClass> {
       ),
     );
     final link = await parameters.buildUrl();
-    print(link.data);
+    print(link);
     final ShortDynamicLink shortenedLink = await DynamicLinkParameters.shortenUrl(
       link,
       DynamicLinkParametersOptions(shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable),
