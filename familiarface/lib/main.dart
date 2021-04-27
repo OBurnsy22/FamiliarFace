@@ -76,8 +76,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    initializeFlutterFire();
     super.initState();
+    initializeFlutterFire();
     FirebaseAuth.instance
         .authStateChanges()
         .listen((User user) {
@@ -444,13 +444,14 @@ class _CreateClassState extends State<CreateClass> {
                     decoration: BoxDecoration(
                         border: Border.all(color: Colors.blueAccent)
                     ),
-                    child: Text("INSERT LINK HERE"),
                   ),
                   ElevatedButton(
-                      onPressed: () {
-                        Clipboard.setData(new ClipboardData(text: "REPLACE THIS WITH THE LINK"));
+                      onPressed: () async {
+                        var dynamicLink = await generateDynamicLink(_class);
+                        print(dynamicLink);
+                        Clipboard.setData(new ClipboardData(text: dynamicLink.toString()));
                       },
-                      child: Text("Copy Link")
+                      child: Text("Generate And Copy To Clipboard ")
                   ),
                   Divider(),
                   TextButton(
@@ -465,6 +466,33 @@ class _CreateClassState extends State<CreateClass> {
           );
         }
     }
+  }
+
+  //possible help: https://stackoverflow.com/questions/45703215/how-to-generate-a-dynamic-link-for-a-specific-post-in-android-firebase/45704583#45704583
+  //https://stackoverflow.com/questions/58481840/flutter-how-to-pass-custom-arguments-in-firebase-dynamic-links-for-app-invite
+  Future<Uri> generateDynamicLink (String className) async {
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: 'https://familface.page.link', //this is the link should match firebase
+      link: Uri.parse('https://familface.page.link/?class=$className'), //this is the deep link, can add parameters
+      androidParameters: AndroidParameters(
+        packageName: 'com.example.familiarface',
+        minimumVersion: 0,
+      ),
+      dynamicLinkParametersOptions: DynamicLinkParametersOptions(
+        shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
+      ),
+      iosParameters: IosParameters(
+        bundleId: 'com.example.familiarface',
+        minimumVersion: '0',
+      ),
+    );
+    final link = await parameters.buildUrl();
+    print(link.data);
+    final ShortDynamicLink shortenedLink = await DynamicLinkParameters.shortenUrl(
+      link,
+      DynamicLinkParametersOptions(shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable),
+    );
+    return shortenedLink.shortUrl;
   }
 }
 /* CLASSES FOR CREATE A CLASS END */
