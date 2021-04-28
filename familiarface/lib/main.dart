@@ -86,8 +86,9 @@ class _MyHomePageState extends State<MyHomePage> {
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
           final Uri deepLink = dynamicLink?.link;
-          if (deepLink != null) { //THIS IF WILL CATCH THE DYNAMIC LINK
+          if (deepLink != null) { //THIS IF WILL CATCH THE DEEP LINK
             print(deepLink);
+            addUserToClass(deepLink.toString());
           }
         },
         onError: (OnLinkErrorException e) async {
@@ -98,9 +99,12 @@ class _MyHomePageState extends State<MyHomePage> {
     final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance
         .getInitialLink(); //gets the link that opened the app, null if it was not opened by a link
     final Uri deepLink = data?.link;
+    /*
     if (deepLink != null) {
+      print("INSIDE SECOND IF");
+      addUserToClass(deepLink.toString());
       print(deepLink);
-    }
+    }*/
   }
 
   @override
@@ -215,6 +219,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  void addUserToClass(String deepLink) {
+    print("INSIDE ADD USER TO CLASS");
+    print(deepLink);
   }
 
 }
@@ -513,7 +522,6 @@ class _CreateClassState extends State<CreateClass> {
       ),
     );
     final link = await parameters.buildUrl();
-    print(link);
     final ShortDynamicLink shortenedLink = await DynamicLinkParameters.shortenUrl(
       link,
       DynamicLinkParametersOptions(shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable),
