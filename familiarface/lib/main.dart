@@ -410,6 +410,7 @@ class _CreateClassState extends State<CreateClass> {
       })
           .then((value) => print("Class database created"))
           .catchError((error) => print(error));
+      generateLinkPopup();
     }
     else { //user has a collection, so see if document already exists, if it does throw error
       DocumentSnapshot document = await firestore.collection(globals.user.email).doc(_class).get();
@@ -456,50 +457,53 @@ class _CreateClassState extends State<CreateClass> {
           })
               .then((value) => print("Class added to database"))
               .catchError((error) => print(error));
-
-          // return pop up box with firebase link to invite people
-          return showDialog<void>(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('SUCCESS:'),
-                content: SingleChildScrollView(
-                  child: ListBody(
-                    children: <Widget>[
-                      Text('Your class has been created! Send this link to users so they can join your class.'),
-                    ],
-                  ),
-                ),
-                actions: <Widget>[
-                  Container(
-                    //margin: const EdgeInsets.all(15.0),
-                    //padding: const EdgeInsets.all(3.0),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent)
-                    ),
-                  ),
-                  ElevatedButton(
-                      onPressed: () async {
-                        var dynamicLink = await generateDynamicLink(_class);
-                        print(dynamicLink);
-                        Clipboard.setData(new ClipboardData(text: dynamicLink.toString()));
-                      },
-                      child: Text("Generate And Copy To Clipboard ")
-                  ),
-                  Divider(),
-                  TextButton(
-                    child: Text('Ok'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
+          generateLinkPopup();
         }
     }
+  }
+
+  Future<void> generateLinkPopup() {
+    // return pop up box with firebase link to invite people
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('SUCCESS:'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Your class has been created! Send this link to users so they can join your class.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            Container(
+              //margin: const EdgeInsets.all(15.0),
+              //padding: const EdgeInsets.all(3.0),
+              decoration: BoxDecoration(
+                  border: Border.all(color: Colors.blueAccent)
+              ),
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  var dynamicLink = await generateDynamicLink(_class);
+                  print(dynamicLink);
+                  Clipboard.setData(new ClipboardData(text: dynamicLink.toString()));
+                },
+                child: Text("Generate And Copy To Clipboard ")
+            ),
+            Divider(),
+            TextButton(
+              child: Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   //possible help: https://stackoverflow.com/questions/45703215/how-to-generate-a-dynamic-link-for-a-specific-post-in-android-firebase/45704583#45704583
