@@ -63,38 +63,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     setState(() {
         _initialized = true;
+        initCurrentUser();
     });
   }
 
-  //handles dynamic links
-  void initDynamicLinks() async {
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-          final Uri deepLink = dynamicLink?.link;
-          if (deepLink != null) {
-            //Navigator.pushNamed(context, deepLink.path);
-            print(deepLink);
-          }
-        },
-        onError: (OnLinkErrorException e) async {
-          print('onLinkError');
-          print(e.message);
-        }
-    );
-    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance
-        .getInitialLink();
-    final Uri deepLink = data?.link;
-    if (deepLink != null) {
-      //Navigator.pushNamed(context, deepLink.path);
-      print(deepLink);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    initializeFlutterFire();
-    initDynamicLinks();
+  void initCurrentUser() {
     FirebaseAuth.instance
         .authStateChanges()
         .listen((User user) {
@@ -105,6 +78,36 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     });
+  }
+
+  //handles dynamic links
+  void initDynamicLinks() async {
+    print("in initDynamicLinks");
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          final Uri deepLink = dynamicLink?.link;
+          if (deepLink != null) { //THIS IF WILL CATCH THE DYNAMIC LINK
+            print(deepLink);
+          }
+        },
+        onError: (OnLinkErrorException e) async {
+          print('onLinkError');
+          print(e.message);
+        }
+    );
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance
+        .getInitialLink(); //gets the link that opened the app, null if it was not opened by a link
+    final Uri deepLink = data?.link;
+    if (deepLink != null) {
+      print(deepLink);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initializeFlutterFire();
+    initDynamicLinks();
   }
 
   @override     // This method is rerun every time setState is called, for instance as done
@@ -298,6 +301,11 @@ class _CreateClassState extends State<CreateClass> {
     );
   }
 
+  /*
+   Note to self, ensure the only characters entered in the form field
+   for the class name are letters and numbers, special characters may cause
+   trouble when extracting the name from the dynamic link
+   */
   //form for creating a class
   Form AddClassForm() {
     return Form(
@@ -488,9 +496,10 @@ class _CreateClassState extends State<CreateClass> {
   //possible help: https://stackoverflow.com/questions/45703215/how-to-generate-a-dynamic-link-for-a-specific-post-in-android-firebase/45704583#45704583
   //https://stackoverflow.com/questions/58481840/flutter-how-to-pass-custom-arguments-in-firebase-dynamic-links-for-app-invite
   Future<Uri> generateDynamicLink (String className) async {
+    String userInv = globals.user.email;
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: 'https://familface.page.link', //this is the link should match firebase
-      link: Uri.parse('https://familface.page.link/?class=$className'), //this is the deep link, can add parameters
+      link: Uri.parse('https://familface.page.link/?class=$className/?userInv=$userInv'), //this is the deep link, can add parameters
       androidParameters: AndroidParameters(
         packageName: 'com.example.familiarface',
         minimumVersion: 0,
