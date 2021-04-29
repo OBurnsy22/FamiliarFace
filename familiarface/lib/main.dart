@@ -225,12 +225,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-  void addUserToClass(String deepLink) {
+  Future<void> addUserToClass(String deepLink) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
     //parse the deepLink for classname and userInv ID
     var splitList = deepLink.split('/');
-    String userInvID = splitList[4].substring(11);
+    String userInvID = splitList[4].substring(9);
     String classID = splitList[3].substring(7);
     classID = classID.replaceAll("+", " "); //url replaces spaces with +, so revert that back
+    print("$userInvID invted you to $classID");
+
+    //must add this user to the class database of who invited them
+
+
+    //must add everyone in that class to the users class database as well
   }
 
 }
@@ -576,10 +584,6 @@ class classView extends StatefulWidget {
 
 
 class _classViewState extends State<classView> {
-  //final QueryDocumentSnapshot class_;
-
-  //constructor that requires a QueryDocumentSnapshot
-  //classView({Key key, @required this.class_}) : super(key: key);
 
   @override
   Widget build(BuildContext context){
@@ -613,8 +617,10 @@ class _classViewState extends State<classView> {
                 child: Text("View Scoreboard")
             ),
             ElevatedButton(
-              onPressed: () {
-                //copy link to clipboard
+              onPressed: () async {
+                var dynamicLink = await generateDynamicLink(widget.class_.id);
+                print(dynamicLink);
+                Clipboard.setData(new ClipboardData(text: dynamicLink.toString()));
               },
               child: Text("Generate and Copy Link")
             ),
@@ -673,6 +679,31 @@ class _classViewState extends State<classView> {
     Navigator.popUntil(context, (route) {
         return count++ == 3;
     });
+  }
+
+  Future<Uri> generateDynamicLink (String className) async {
+    String userInv = globals.user.email;
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: 'https://familface.page.link', //this is the link should match firebase
+      link: Uri.parse('https://familface.page.link/?class=$className/?userInv=$userInv'), //this is the deep link, can add parameters
+      androidParameters: AndroidParameters(
+        packageName: 'com.example.familiarface',
+        minimumVersion: 0,
+      ),
+      dynamicLinkParametersOptions: DynamicLinkParametersOptions(
+        shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
+      ),
+      iosParameters: IosParameters(
+        bundleId: 'com.example.familiarface',
+        minimumVersion: '0',
+      ),
+    );
+    final link = await parameters.buildUrl();
+    final ShortDynamicLink shortenedLink = await DynamicLinkParameters.shortenUrl(
+      link,
+      DynamicLinkParametersOptions(shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable),
+    );
+    return shortenedLink.shortUrl;
   }
 }
 /* CLASSES FOR CLASS VIEW END */
