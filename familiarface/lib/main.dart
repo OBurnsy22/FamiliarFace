@@ -68,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void initCurrentUser() {
+    print("in init current user");
     FirebaseAuth.instance
         .authStateChanges()
         .listen((User user) {
@@ -199,6 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //signs the user in through google
   Future<UserCredential> googleSignIn() async {  //look at firebase auth for reference
     // Trigger the authentication flow
+    print("in google sign in");
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
 
     // Obtain the auth details from the request
@@ -221,9 +223,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
+
   void addUserToClass(String deepLink) {
-    print("INSIDE ADD USER TO CLASS");
-    print(deepLink);
+    //parse the deepLink for classname and userInv ID
+    var splitList = deepLink.split('/');
+    String userInvID = splitList[4].substring(11);
+    String classID = splitList[3].substring(7);
+    classID = classID.replaceAll("+", " "); //url replaces spaces with +, so revert that back
   }
 
 }
@@ -648,6 +654,12 @@ class _classViewState extends State<classView> {
                   );
                 },
                 child: Text("View Scoreboard")
+            ),
+            ElevatedButton(
+              onPressed: () {
+                //copy link to clipboard
+              },
+              child: Text("Generate and Copy Link")
             ),
             ElevatedButton(
                 onPressed: () {
