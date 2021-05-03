@@ -235,10 +235,26 @@ class _MyHomePageState extends State<MyHomePage> {
     classID = classID.replaceAll("+", " "); //url replaces spaces with +, so revert that back
     print("$userInvID invted you to $classID");
 
-    //must add this user to the class database of who invited them
+    //get a copy of the students array from whoever sent the link
+    QuerySnapshot snap = await FirebaseFirestore.instance.collection(userInvID).get();
+    Map<String, dynamic> userInvClassData;
+    snap.docs.forEach((element) {
+      if(element.id == classID){
+          userInvClassData = element.data();
+      }
+    });
+    var studentsList = userInvClassData["students"];
+    studentsList.add(globals.user.email);
 
+    firestore
+        .collection(userInvID)
+        .doc(classID)
+        .update({
+      'students' : studentsList,
+    })
+        .then((value) => print("Students array updated for $userInvID"))
+        .catchError((error) => print(error));
 
-    //must add everyone in that class to the users class database as well
   }
 
 }
