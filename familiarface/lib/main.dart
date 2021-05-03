@@ -243,17 +243,69 @@ class _MyHomePageState extends State<MyHomePage> {
           userInvClassData = element.data();
       }
     });
-    var studentsList = userInvClassData["students"];
+    //add the user who was invited to the array
+    final List studentsList = userInvClassData["students"];
     studentsList.add(globals.user.email);
-
+    //update the senders student array in their database for this class
     firestore
         .collection(userInvID)
         .doc(classID)
         .update({
       'students' : studentsList,
     })
-        .then((value) => print("Students array updated for $userInvID"))
+        .then((value) => print("Students array updated for link sender $userInvID"))
         .catchError((error) => print(error));
+
+    /*update the individul who accepted the links database, so they now are
+    enrolled in that class, and their class database array has everyone else
+    in the class, excludeing themselves.
+    */
+
+    //append the user who sent the invite link, to accurately update everyone class array
+    studentsList.add(userInvID);
+    for(int i=0; i<studentsList.length; i++) {
+      String cur_student = studentsList[i];
+      //copy the values form studentsList to a new list
+      List tempStudentsList = new List<String>.from(studentsList);
+      //remove the current student so we don't add them to their own class database
+      tempStudentsList.remove(cur_student);
+
+      //do not alter the link senders class array, it has already been done above
+      if (cur_student != userInvID)
+        {
+        //if the current user is the one who was invited, create a whole new collection for them
+        if (cur_student == globals.user.email) {
+          firestore
+              .collection(globals.user.email)
+              .doc(classID)
+              .set({
+            'isTeacher': false,
+            'correctGuess': 0,
+            'totalGuess': 0,
+            'accuracy': "%0",
+            'students': tempStudentsList,
+            'similarEmails': userInvClassData['similarEmails'],
+            'gamesPlayed': 0,
+          })
+              .then((value) =>
+              print("Class database created for link receiver"))
+              .catchError((error) => print(error));
+        }
+        else {
+          //else if they are someone who was already in the class, just update their students array
+          firestore
+              .collection(cur_student)
+              .doc(classID)
+              .update({
+            'students': tempStudentsList,
+          })
+              .then((value) =>
+              print(
+                  "Students array updated $cur_student, who is already in class $classID"))
+              .catchError((error) => print(error));
+        }
+       }
+      }
 
   }
 
