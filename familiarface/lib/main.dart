@@ -338,9 +338,9 @@ class _SettingsPageState extends State<SettingsPage> {
               children: <Widget>[
                 ElevatedButton(
                     onPressed: () {
-                      getImage();
+                      imageSelectOptions();
                     },
-                    child: Text("Add Profile Picture")
+                    child: Text("Upload Profile Picture")
                 ),
                 ElevatedButton(
                     onPressed: () {
@@ -366,9 +366,66 @@ class _SettingsPageState extends State<SettingsPage> {
     //force a naviagtion event to go back to the homepage
     //pop the entire stack and push the home page back onto the stack
   }
-  //https://firebase.google.com/docs/storage/android/start
-  Future getImage() async {
+
+  Future<void> imageSelectOptions() {
+    // return pop up box to allow users to select image from gallery or camera
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('IMAGE UPLOAD LOCATION:'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Where would you like to upload your image from?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            Container(
+              //margin: const EdgeInsets.all(15.0),
+              //padding: const EdgeInsets.all(3.0),
+              decoration: BoxDecoration(
+                  border: Border.all(color: Colors.blueAccent)
+              ),
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  getImageGallery();
+                },
+                child: Text("Gallery")
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  getImageCamera();
+                },
+                child: Text("Camera")
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+  //https://firebase.flutter.dev/docs/storage/usage/
+  Future getImageCamera() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
+    //final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+        //print(_image.path);
+        imageToCloud();
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future getImageGallery() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
     //final pickedFile = await picker.getImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null) {
