@@ -754,6 +754,7 @@ class classView extends StatefulWidget {
 
 
 class _classViewState extends State<classView> {
+  var studentInfo = new Map();
 
   @override
   Widget build(BuildContext context){
@@ -772,8 +773,13 @@ class _classViewState extends State<classView> {
               child: Text("Play Game")
             ),
             ElevatedButton(
-              onPressed: () {
-                gatherStudentData( widget.class_.data(), widget.class_.id);
+              onPressed: () async {
+                //retrieve map of student names and picture urls
+                studentInfo = await gatherStudentData(widget.class_.data(), widget.class_.id);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => roster(classUserData : studentInfo)),
+                );
               },
               child: Text("View Roster")
             ),
@@ -919,7 +925,7 @@ class scoreboard extends StatelessWidget {
 /* This function will pass a map of all student names and their
 corresponding images to 'roster', so it can display them in a list
  */
-Future<void> gatherStudentData(Map<String, dynamic> classData, String className) async {
+Future<Map> gatherStudentData(Map<String, dynamic> classData, String className) async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   List studentEmailList = new List<String>.from(classData["students"]);
 
@@ -951,6 +957,8 @@ Future<void> gatherStudentData(Map<String, dynamic> classData, String className)
     }
   //map full of student names and corresponding images
   print(studentInfo);
+  //pass this map to the roster page
+  return studentInfo;
 }
 
 // use Image.network(downloadURL) to display the images
@@ -977,10 +985,10 @@ Future<String> downloadUserPhoto(String usrEmail) async {
 
 
 class roster extends StatelessWidget {
-  final Map<String, dynamic> classData;
+  var classUserData = new Map();
 
   //constructor requires information about the class
-  roster({Key key, @required this.classData}) : super(key : key);
+  roster({Key key, @required this.classUserData}) : super(key : key);
 
   //Roster should show name with a picture of them as well
   @override
