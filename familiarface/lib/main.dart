@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
+import 'package:image_picker/image_picker.dart';
 import 'my_globals.dart' as globals;
 
 
@@ -133,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PageSettings()),
+                    MaterialPageRoute(builder: (context) => SettingsPage()),
                   );
                 }
                 ,),
@@ -321,6 +322,9 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  File _image;
+  final picker = ImagePicker();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -331,6 +335,12 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                ElevatedButton(
+                    onPressed: () {
+                      getImage();
+                    },
+                    child: Text("Add Profile Picture")
+                ),
                 ElevatedButton(
                     onPressed: () {
                       googleSignOut();
@@ -355,6 +365,19 @@ class _SettingsPageState extends State<SettingsPage> {
     //force a naviagtion event to go back to the homepage
     //pop the entire stack and push the home page back onto the stack
   }
+  //https://firebase.google.com/docs/storage/android/start
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    //final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
 }
 /* CLASSES FOR SETTINGS PAGE END */
 
