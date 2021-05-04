@@ -9,6 +9,7 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'my_globals.dart' as globals;
 
 
@@ -372,10 +373,23 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
+        //print(_image.path);
+        imageToCloud();
       } else {
         print('No image selected.');
       }
     });
+  }
+
+  Future<void> imageToCloud () async{
+    String usrEmail = globals.user.email;
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('uploads/$usrEmail/profile.png')
+          .putFile(_image);
+    } catch (e) {
+      print("An error occured while attempting to upload an image");
+    }
   }
 
 }
