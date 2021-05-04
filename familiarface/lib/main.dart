@@ -8,6 +8,7 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'my_globals.dart' as globals;
 
@@ -436,7 +437,6 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
-        //print(_image.path);
         imageToCloud();
       } else {
         print('No image selected.');
@@ -450,6 +450,7 @@ class _SettingsPageState extends State<SettingsPage> {
       await firebase_storage.FirebaseStorage.instance
           .ref('uploads/$usrEmail/profile.png')
           .putFile(_image);
+      print("Successfully uploaded image to cloud");
     } catch (e) {
       print("An error occured while attempting to upload an image");
     }
@@ -922,27 +923,56 @@ Future<void> gatherStudentData(Map<String, dynamic> classData, String className)
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   List studentEmailList = new List<String>.from(classData["students"]);
 
-  /* key will be their name, value will be their image, if they don't have an
-  image set at the time this function is called, a placeholder image will be given
-  instead
-   */
-  Map<String, int> studentInfo;
+  var studentInfo = new Map();
 
   //using student emails, retrieve their names from their database
   for(int i=0; i<studentEmailList.length; i++)
     {
+      String studentName;
       QuerySnapshot snap = await FirebaseFirestore.instance.collection(studentEmailList[i]).get();
       snap.docs.forEach((element) {
         if(element.id == className){
           Map<String, dynamic> data = element.data();
-          String studentName = data["name"];
-          studentInfo[studentName] = 1;
+          //capture the students name
+          studentName = data["name"];
+          //append 6 digit number at the end to ensure uniqueness
+          String studentUniqueID = "#";
+          var rng = new Random();
+          for (var i = 0; i < 6; i++) {//generates 0-9
+            studentUniqueID += rng.nextInt(10).toString();
+          }
+          studentName += studentUniqueID;
         }
       });
+      //now retrieve their corresponding pictures from firebase
+      String userPictureURL = await downloadUserPhoto(studentEmailList[i]);
+      //add to map
+      studentInfo[studentName] = userPictureURL;
     }
+  //map full of student names and corresponding images
+  print(studentInfo);
+}
 
-  var iter = studentInfo.keys;
-  print(iter);
+// use Image.network(downloadURL) to display the images
+Future<String> downloadUserPhoto(String usrEmail) async {
+  try {
+    String downloadURL = await firebase_storage.FirebaseStorage.instance
+        .ref('uploads/$usrEmail/profile.png')
+        .getDownloadURL();
+    print("Retrieved image for $usrEmail");
+    return downloadURL;
+  } catch (e) {
+    print("Couldn't retrieve image for $usrEmail, retrieving default image instead");
+    try {
+      String downloadURL = await firebase_storage.FirebaseStorage.instance
+          .ref('uploads/no_image/Unknown_User.png')
+          .getDownloadURL();
+      print("Retrieved default image for $usrEmail");
+      return downloadURL;
+    } catch (e) {
+      print("Failed to retrieve default image for $usrEmail");
+    }
+  }
 }
 
 
