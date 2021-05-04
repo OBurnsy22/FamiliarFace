@@ -133,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SettingsPage()),
+                    MaterialPageRoute(builder: (context) => PageSettings()),
                   );
                 }
                 ,),
@@ -279,6 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
               .collection(globals.user.email)
               .doc(classID)
               .set({
+            'name' : globals.user.displayName,
             'isTeacher': false,
             'correctGuess': 0,
             'totalGuess': 0,
@@ -350,7 +351,6 @@ class _SettingsPageState extends State<SettingsPage> {
       globals.user = null;
       globals.signedIn = false;
     });
-    await Future.delayed(Duration(seconds: 2)); //wait 2 seconds for vars to update
     Navigator.pop(context);
     //force a naviagtion event to go back to the homepage
     //pop the entire stack and push the home page back onto the stack
@@ -486,6 +486,7 @@ class _CreateClassState extends State<CreateClass> {
         .collection(globals.user.email)
         .doc(_class)
         .set({
+      'name' : globals.user.displayName,
       'isTeacher' : true,
       'correctGuess' : 0,
       'totalGuess' : 0,
