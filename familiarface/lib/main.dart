@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -402,6 +401,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
                 child: Text("Camera")
             ),
+            Divider(),
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
           ],
         );
       },
@@ -766,7 +772,7 @@ class _classViewState extends State<classView> {
             ),
             ElevatedButton(
               onPressed: () {
-                //naviagete to roster
+                gatherStudentData( widget.class_.data(), widget.class_.id);
               },
               child: Text("View Roster")
             ),
@@ -872,7 +878,6 @@ class _classViewState extends State<classView> {
 /* CLASSES FOR CLASS VIEW END */
 
 
-
 /* CLASSES FOR SCOREBOARD START */
 class scoreboard extends StatelessWidget {
  final Map<String, dynamic> classData;
@@ -906,3 +911,60 @@ class scoreboard extends StatelessWidget {
   }
 }
 /* CLASSES FOR SCOREBOARD END */
+
+
+/* CLASSES FOR ROSTER START */
+
+/* This function will pass a map of all student names and their
+corresponding images to 'roster', so it can display them in a list
+ */
+Future<void> gatherStudentData(Map<String, dynamic> classData, String className) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  List studentEmailList = new List<String>.from(classData["students"]);
+
+  /* key will be their name, value will be their image, if they don't have an
+  image set at the time this function is called, a placeholder image will be given
+  instead
+   */
+  Map<String, int> studentInfo;
+
+  //using student emails, retrieve their names from their database
+  for(int i=0; i<studentEmailList.length; i++)
+    {
+      QuerySnapshot snap = await FirebaseFirestore.instance.collection(studentEmailList[i]).get();
+      snap.docs.forEach((element) {
+        if(element.id == className){
+          Map<String, dynamic> data = element.data();
+          String studentName = data["name"];
+          studentInfo[studentName] = 1;
+        }
+      });
+    }
+
+  var iter = studentInfo.keys;
+  print(iter);
+}
+
+
+class roster extends StatelessWidget {
+  final Map<String, dynamic> classData;
+
+  //constructor requires information about the class
+  roster({Key key, @required this.classData}) : super(key : key);
+
+  //Roster should show name with a picture of them as well
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Roster"),
+      ),
+      body: ListView(
+        children: [
+
+        ],
+      )
+    );
+  }
+}
+/* CLASSES FOR ROSTER END */
