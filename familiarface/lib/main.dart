@@ -767,9 +767,14 @@ class _classViewState extends State<classView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () {
-                //navigate to play game
-              },
+                onPressed: () async {
+                  //retrieve map of student names and picture urls
+                  studentInfo = await gatherStudentData(widget.class_.data(), widget.class_.id);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => matchingGame(classUserData : studentInfo)),
+                  );
+                },
               child: Text("Play Game")
             ),
             ElevatedButton(
@@ -1034,3 +1039,58 @@ class rosterState extends State<roster> {
   }
 }
 /* CLASSES FOR ROSTER END */
+
+
+/* CLASSES FOR GAME START */
+class matchingGame extends StatefulWidget{
+  var classUserData = new Map();
+
+  matchingGame({Key key, @required this.classUserData}) : super(key : key);
+
+  @override
+  matchingGameState createState() => matchingGameState();
+}
+
+
+/* For the game, wrap the CircleAvatar and text widgets in GestureDetectors,
+so when they are tapped a function can then be called
+ */
+class matchingGameState extends State<matchingGame> {
+  List studentNames = [];
+  List studentPhotoURLS = [];
+
+  void splitMap () {
+    widget.classUserData.forEach((key, value) {
+      studentNames.add(key);
+      studentPhotoURLS.add(value);
+    });
+    //shuffle lists for the game
+    studentNames.shuffle();
+    studentPhotoURLS.shuffle();
+  }
+
+  @override
+  void initState() {
+    splitMap();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("Roster"),
+        ),
+        body: Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+
+                ]
+            )
+        )
+    );
+  }
+}
+
+/* CLASSES FOR GAME END */
