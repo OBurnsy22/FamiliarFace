@@ -876,66 +876,88 @@ class classView extends StatefulWidget {
 
 class _classViewState extends State<classView> {
   var studentInfo = new Map();
+  var classData = new Map();
+  bool varsInitialized = false;
+
+  Future <void> populateStudentInfo() async {
+    studentInfo = await gatherStudentData(widget.class_.data(), widget.class_.id);
+    setState(() {
+      varsInitialized = true;
+    });
+  }
+
+  @override
+  void initState()  {
+    classData = widget.class_.data();
+    super.initState();
+    populateStudentInfo();
+  }
 
   @override
   Widget build(BuildContext context){
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.class_.id.substring(0,widget.class_.id.length-7)),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-                onPressed: () async {
-                  //retrieve map of student names and picture urls
-                  studentInfo = await gatherStudentData(widget.class_.data(), widget.class_.id);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => matchingGame(classUserData : studentInfo)),
-                  );
-                },
-              child: Text("Play Game")
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                //retrieve map of student names and picture urls
-                studentInfo = await gatherStudentData(widget.class_.data(), widget.class_.id);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => roster(classUserData : studentInfo)),
-                );
-              },
-              child: Text("View Roster")
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => scoreboard(classData : widget.class_.data())),
-                  );
-                },
-                child: Text("View Scoreboard")
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                var dynamicLink = await generateDynamicLink(widget.class_.id);
-                print(dynamicLink);
-                Clipboard.setData(new ClipboardData(text: dynamicLink.toString()));
-              },
-              child: Text("Generate and Copy Link")
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  deleteClassWarning(context);
-                },
-                child: Text("Delete Class")
-            ),
-          ]
+    if(varsInitialized) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+              widget.class_.id.substring(0, widget.class_.id.length - 7)),
         ),
-      ),
-    );
+        body: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) =>
+                            matchingGame(classUserData: studentInfo)),
+                      );
+                    },
+                    child: Text("Play Game")
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) =>
+                            roster(classUserData: studentInfo)),
+                      );
+                    },
+                    child: Text("View Roster")
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) =>
+                            scoreboard(classData: classData)),
+                      );
+                    },
+                    child: Text("View Scoreboard")
+                ),
+                ElevatedButton(
+                    onPressed: () async {
+                      var dynamicLink = await generateDynamicLink(
+                          widget.class_.id);
+                      print(dynamicLink);
+                      Clipboard.setData(
+                          new ClipboardData(text: dynamicLink.toString()));
+                    },
+                    child: Text("Generate and Copy Link")
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      deleteClassWarning(context);
+                    },
+                    child: Text("Delete Class")
+                ),
+              ]
+          ),
+        ),
+      );
+    } else {
+      return CircularProgressIndicator();
+    }
   }
 
   Future<void> deleteClassWarning (BuildContext context) {
