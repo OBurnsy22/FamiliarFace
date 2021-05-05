@@ -325,33 +325,76 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   File _image;
   final picker = ImagePicker();
+  bool picReceived = false;
+  String userImage = " ";
+
+  // use Image.network(downloadURL) to display the images
+  Future<void> downloadUserPhoto(String usrEmail) async {
+    try {
+      String downloadURL = await firebase_storage.FirebaseStorage.instance
+          .ref('uploads/$usrEmail/profile.png')
+          .getDownloadURL();
+      print("Retrieved image for $usrEmail");
+      setState(() {
+        picReceived = true;
+        userImage = downloadURL;
+      });
+    } catch (e) {
+      print("Couldn't retrieve image for $usrEmail, retrieving default image instead");
+      try {
+        String downloadURL = await firebase_storage.FirebaseStorage.instance
+            .ref('uploads/no_image/Unknown_User.png')
+            .getDownloadURL();
+        print("Retrieved default image for $usrEmail");
+        setState(() {
+          picReceived = true;
+          userImage = downloadURL;
+        });
+      } catch (e) {
+        print("Failed to retrieve default image for $usrEmail");
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    downloadUserPhoto(globals.user.email);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Settings'),
-      ),
-      body: Center(
+    if(picReceived) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Settings'),
+        ),
+        body: Center(
           child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                    onPressed: () {
-                      imageSelectOptions();
-                    },
-                    child: Text("Upload Profile Picture")
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      googleSignOut();
-                    },
-                    child: Text("Logout")
-                ),
-              ],
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircleAvatar(
+                backgroundImage: NetworkImage(userImage),
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    imageSelectOptions();
+                  },
+                  child: Text("Upload Profile Picture")
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    googleSignOut();
+                  },
+                  child: Text("Logout")
+              ),
+            ],
           ),
-      ),
-    );
+        ),
+      );
+    } else {
+      return CircularProgressIndicator();
+    }
   }
 
   //signs out current user and returns them to homepage
