@@ -535,12 +535,17 @@ class _CreateClassState extends State<CreateClass> {
         ),
         onSaved: (String className){
           _class = className;
-          // This optional block of code can be used to run
-          // code when the user saves the form.
         },
         validator: (String className) {
+          //ensure a class name was entered
           if ((className.isEmpty)) {
             return 'Please enter text';
+          }
+          //ensure no special characters are in the classname using a regex
+          RegExp exp = RegExp(r"([a-z A-Z0-9])");
+          Iterable<RegExpMatch> matches = exp.allMatches(className);
+          if(matches.length != className.length) {
+            return 'Class names only allow letters, numbers, and spaces';
           }
           return null;
         },
