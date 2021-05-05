@@ -253,6 +253,33 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Future<void> classOwnerAcceptedLink() {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('ERROR:'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('You cannot accept an invite link to a class you are the owner of.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Understood'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   Future<void> addUserToClass(String deepLink) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -263,6 +290,12 @@ class _MyHomePageState extends State<MyHomePage> {
     String classID = splitList[3].substring(7);
     classID = classID.replaceAll("+", " "); //url replaces spaces with +, so revert that back
     print("$userInvID invted you to $classID");
+
+    //make sure the user who created the link isn't accepting it
+    if(globals.user.email == userInvID){
+      classOwnerAcceptedLink();
+      return;
+    }
 
     //get a copy of the students array from whoever sent the link
     QuerySnapshot snap = await FirebaseFirestore.instance.collection(userInvID).get();
