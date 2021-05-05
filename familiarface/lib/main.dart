@@ -896,65 +896,118 @@ class _classViewState extends State<classView> {
   @override
   Widget build(BuildContext context){
     if(varsInitialized) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-              widget.class_.id.substring(0, widget.class_.id.length - 7)),
-        ),
-        body: Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) =>
-                            matchingGame(classUserData: studentInfo)),
-                      );
-                    },
-                    child: Text("Play Game")
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) =>
-                            roster(classUserData: studentInfo)),
-                      );
-                    },
-                    child: Text("View Roster")
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) =>
-                            scoreboard(classData: classData)),
-                      );
-                    },
-                    child: Text("View Scoreboard")
-                ),
-                ElevatedButton(
-                    onPressed: () async {
-                      var dynamicLink = await generateDynamicLink(
-                          widget.class_.id);
-                      print(dynamicLink);
-                      Clipboard.setData(
-                          new ClipboardData(text: dynamicLink.toString()));
-                    },
-                    child: Text("Generate and Copy Link")
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      deleteClassWarning(context);
-                    },
-                    child: Text("Delete Class")
-                ),
-              ]
+      if(classData["isTeacher"] == true){
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+                widget.class_.id.substring(0, widget.class_.id.length - 7)),
           ),
-        ),
-      );
+          body: Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) =>
+                              matchingGame(classUserData: studentInfo)),
+                        );
+                      },
+                      child: Text("Play Game")
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) =>
+                              roster(classUserData: studentInfo)),
+                        );
+                      },
+                      child: Text("View Roster")
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) =>
+                              scoreboard(classData: classData)),
+                        );
+                      },
+                      child: Text("View Scoreboard")
+                  ),
+                  ElevatedButton(
+                      onPressed: () async {
+                        var dynamicLink = await generateDynamicLink(
+                            widget.class_.id);
+                        print(dynamicLink);
+                        Clipboard.setData(
+                            new ClipboardData(text: dynamicLink.toString()));
+                      },
+                      child: Text("Generate and Copy Link")
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        deleteClassWarning(context);
+                      },
+                      child: Text("Delete Class")
+                  ),
+                ]
+            ),
+          ),
+        );
+      } else{ //user is not the owner of this class
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+                widget.class_.id.substring(0, widget.class_.id.length - 7)),
+          ),
+          body: Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) =>
+                              matchingGame(classUserData: studentInfo)),
+                        );
+                      },
+                      child: Text("Play Game")
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) =>
+                              roster(classUserData: studentInfo)),
+                        );
+                      },
+                      child: Text("View Roster")
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) =>
+                              scoreboard(classData: classData)),
+                        );
+                      },
+                      child: Text("View Scoreboard")
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        //Let the user leave the class, and ensure to remove them from all other databases of
+                        //users in the same class
+                      },
+                      child: Text("Leave Class")
+                  ),
+                ]
+            ),
+          ),
+        );
+      }
     } else {
       return CircularProgressIndicator();
     }
