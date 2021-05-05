@@ -65,8 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
       print(e);
     }
     setState(() {
-        _initialized = true;
-        initCurrentUser();
+      _initialized = true;
+      initCurrentUser();
     });
   }
 
@@ -242,7 +242,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Map<String, dynamic> userInvClassData;
     snap.docs.forEach((element) {
       if(element.id == classID){
-          userInvClassData = element.data();
+        userInvClassData = element.data();
       }
     });
     //add the user who was invited to the array
@@ -274,7 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //do not alter the link senders class array, it has already been done above
       if (cur_student != userInvID)
-        {
+      {
         //if the current user is the one who was invited, create a whole new collection for them
         if (cur_student == globals.user.email) {
           firestore
@@ -307,8 +307,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   "Students array updated $cur_student, who is already in class $classID"))
               .catchError((error) => print(error));
         }
-       }
       }
+    }
 
   }
 
@@ -767,8 +767,13 @@ class _classViewState extends State<classView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () {
-                //navigate to play game
+              onPressed: () async {
+                //retrieve map of student names and picture urls
+                studentInfo = await gatherStudentData(widget.class_.data(), widget.class_.id);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => matchingGame(classUserData : studentInfo)),
+                );
               },
               child: Text("Play Game")
             ),
@@ -1034,3 +1039,54 @@ class rosterState extends State<roster> {
   }
 }
 /* CLASSES FOR ROSTER END */
+
+
+/* CLASSES FOR GAME START */
+class matchingGame extends StatefulWidget{
+  var classUserData = new Map();
+
+  matchingGame({Key key, @required this.classUserData}) : super(key : key);
+
+  @override
+  matchingGameState createState() => matchingGameState();
+}
+
+class matchingGameState extends State<matchingGame> {
+  List studentNames = [];
+  List studentPhotoURLS = [];
+
+  void splitMap () {
+    widget.classUserData.forEach((key, value) {
+      studentNames.add(key);
+      studentPhotoURLS.add(value);
+    });
+    //shuffle lists for the game
+    studentNames.shuffle();
+    studentPhotoURLS.shuffle();
+  }
+
+  @override
+  void initState() {
+    splitMap();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Roster"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+          ]
+        )
+      )
+    );
+  }
+}
+
+/* CLASSES FOR GAME END */
