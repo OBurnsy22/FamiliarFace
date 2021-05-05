@@ -226,6 +226,33 @@ class _MyHomePageState extends State<MyHomePage> {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
+  Future<void> incorrectDomainName() {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('ERROR:'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Your email does not share a similar domain name with the user who sent the invite link, you will not be added to this class.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Understood'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   Future<void> addUserToClass(String deepLink) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -245,6 +272,14 @@ class _MyHomePageState extends State<MyHomePage> {
         userInvClassData = element.data();
       }
     });
+    //check if the user who sent the invite wants similar domain names or not
+    List userInvDomain = userInvID.split('@');
+    List userRecDomain = globals.user.email.split('@');
+    if(userInvClassData["similarEmails"] == true && userInvDomain[1] != userRecDomain[1]){
+      incorrectDomainName();
+      return;
+    }
+
     //add the user who was invited to the array
     final List studentsList = userInvClassData["students"];
     studentsList.add(globals.user.email);
@@ -599,7 +634,7 @@ class _CreateClassState extends State<CreateClass> {
         },
       ),
       CheckboxListTile(
-          title: Text("Ensure users share same school email?"),
+          title: Text("Ensure users share similar email domains?"),
           value: _checkbox,
           onChanged: (bool value) {
             setState(() {
