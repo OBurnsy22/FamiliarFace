@@ -55,7 +55,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _initialized = false;
-  String usrPhotoURL = " ";
 
   //initializes firebase
   Future<void> initializeFlutterFire() async {
@@ -66,12 +65,13 @@ class _MyHomePageState extends State<MyHomePage> {
       print(e);
     }
     setState(() {
-        _initialized = true;
-        initCurrentUser();
+      _initialized = true;
+      initCurrentUser();
     });
   }
 
   void initCurrentUser() {
+    print("in init current user");
     FirebaseAuth.instance
         .authStateChanges()
         .listen((User user) {
@@ -79,7 +79,6 @@ class _MyHomePageState extends State<MyHomePage> {
         print(user.uid);
         setState(() {
           globals.user=user;
-          downloadUserPhoto(globals.user.email);
         });
       }
     });
@@ -87,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //handles dynamic links
   void initDynamicLinks() async {
+    print("in initDynamicLinks");
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
           final Uri deepLink = dynamicLink?.link;
@@ -103,27 +103,12 @@ class _MyHomePageState extends State<MyHomePage> {
     final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance
         .getInitialLink(); //gets the link that opened the app, null if it was not opened by a link
     final Uri deepLink = data?.link;
-  }
-
-  Future<void> downloadUserPhoto(String usrEmail) async {
-    try {
-      String downloadURL = await firebase_storage.FirebaseStorage.instance
-          .ref('uploads/$usrEmail/profile.png')
-          .getDownloadURL();
-      print("Retrieved image for $usrEmail");
-      usrPhotoURL = downloadURL;
-    } catch (e) {
-      print("Couldn't retrieve image for $usrEmail, retrieving default image instead");
-      try {
-        String downloadURL = await firebase_storage.FirebaseStorage.instance
-            .ref('uploads/no_image/Unknown_User.png')
-            .getDownloadURL();
-        print("Retrieved default image for $usrEmail");
-        usrPhotoURL = downloadURL;
-      } catch (e) {
-        print("Failed to retrieve default image for $usrEmail");
-      }
-    }
+    /*
+    if (deepLink != null) {
+      print("INSIDE SECOND IF");
+      addUserToClass(deepLink.toString());
+      print(deepLink);
+    }*/
   }
 
   @override
@@ -142,17 +127,18 @@ class _MyHomePageState extends State<MyHomePage> {
           appBar: AppBar(
             title: Text(widget.title),
             actions: <Widget>[
-              GestureDetector(
-                onTap:() {
+              IconButton(
+                icon: Icon(
+                  Icons.settings,
+                  color: Colors.white,
+                ),
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => SettingsPage()),
                   );
-                },
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(usrPhotoURL),
-               ),
-              )
+                }
+                ,),
             ],
           ),
           body: Center(
@@ -236,6 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       globals.signedIn = true;
     });
+
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
@@ -255,7 +242,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Map<String, dynamic> userInvClassData;
     snap.docs.forEach((element) {
       if(element.id == classID){
-          userInvClassData = element.data();
+        userInvClassData = element.data();
       }
     });
     //add the user who was invited to the array
@@ -287,7 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //do not alter the link senders class array, it has already been done above
       if (cur_student != userInvID)
-        {
+      {
         //if the current user is the one who was invited, create a whole new collection for them
         if (cur_student == globals.user.email) {
           firestore
@@ -320,8 +307,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   "Students array updated $cur_student, who is already in class $classID"))
               .catchError((error) => print(error));
         }
-       }
       }
+    }
 
   }
 
