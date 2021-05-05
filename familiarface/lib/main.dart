@@ -65,8 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
       print(e);
     }
     setState(() {
-        _initialized = true;
-        initCurrentUser();
+      _initialized = true;
+      initCurrentUser();
     });
   }
 
@@ -242,7 +242,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Map<String, dynamic> userInvClassData;
     snap.docs.forEach((element) {
       if(element.id == classID){
-          userInvClassData = element.data();
+        userInvClassData = element.data();
       }
     });
     //add the user who was invited to the array
@@ -274,7 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //do not alter the link senders class array, it has already been done above
       if (cur_student != userInvID)
-        {
+      {
         //if the current user is the one who was invited, create a whole new collection for them
         if (cur_student == globals.user.email) {
           firestore
@@ -307,8 +307,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   "Students array updated $cur_student, who is already in class $classID"))
               .catchError((error) => print(error));
         }
-       }
       }
+    }
 
   }
 
@@ -1042,6 +1042,10 @@ class rosterState extends State<roster> {
 
 
 /* CLASSES FOR GAME START */
+/* For the game, wrap the CircleAvatar and text widgets in GestureDetectors,
+so when they are tapped a function can then be called
+ */
+/* CLASSES FOR GAME START */
 class matchingGame extends StatefulWidget{
   var classUserData = new Map();
 
@@ -1051,10 +1055,6 @@ class matchingGame extends StatefulWidget{
   matchingGameState createState() => matchingGameState();
 }
 
-
-/* For the game, wrap the CircleAvatar and text widgets in GestureDetectors,
-so when they are tapped a function can then be called
- */
 class matchingGameState extends State<matchingGame> {
   List studentNames = [];
   List studentPhotoURLS = [];
