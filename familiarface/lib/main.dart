@@ -494,6 +494,11 @@ class _SettingsPageState extends State<SettingsPage> {
           .ref('uploads/$usrEmail/profile.png')
           .putFile(_image);
       print("Successfully uploaded image to cloud");
+      setState(() {
+        picReceived = false;
+        userImage = " ";
+        downloadUserPhoto(usrEmail);
+      });
     } catch (e) {
       print("An error occured while attempting to upload an image");
     }
