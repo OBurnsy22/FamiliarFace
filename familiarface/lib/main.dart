@@ -926,7 +926,6 @@ class scoreboard extends StatelessWidget {
 corresponding images to 'roster', so it can display them in a list
  */
 Future<Map> gatherStudentData(Map<String, dynamic> classData, String className) async {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
   List studentEmailList = new List<String>.from(classData["students"]);
 
   var studentInfo = new Map();
@@ -984,11 +983,32 @@ Future<String> downloadUserPhoto(String usrEmail) async {
 }
 
 
-class roster extends StatelessWidget {
+class roster extends StatefulWidget{
   var classUserData = new Map();
 
-  //constructor requires information about the class
   roster({Key key, @required this.classUserData}) : super(key : key);
+
+  @override
+  rosterState createState() => rosterState();
+}
+
+
+class rosterState extends State<roster> {
+  List studentNames = [];
+  List studentPhotoURLS = [];
+
+  void splitMap () {
+    widget.classUserData.forEach((key, value) {
+      studentNames.add(key);
+      studentPhotoURLS.add(value);
+    });
+  }
+
+  @override
+  void initState() {
+    splitMap();
+    super.initState();
+  }
 
   //Roster should show name with a picture of them as well
   @override
@@ -997,11 +1017,19 @@ class roster extends StatelessWidget {
       appBar: AppBar(
         title: Text("Roster"),
       ),
-      body: ListView(
-        children: [
-
-        ],
-      )
+      body: ListView.builder(
+        itemCount: widget.classUserData.length,
+        itemBuilder: (context, index) {
+            String name = studentNames[index];
+            String URL = studentPhotoURLS[index];
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(URL),
+              ),
+              title: Text(name.substring(0, name.length-7)),
+            );
+        },
+      ),
     );
   }
 }
