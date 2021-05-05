@@ -55,6 +55,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _initialized = false;
+  String usrPhotoURL = " ";
 
   //initializes firebase
   Future<void> initializeFlutterFire() async {
@@ -71,7 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void initCurrentUser() {
-    print("in init current user");
     FirebaseAuth.instance
         .authStateChanges()
         .listen((User user) {
@@ -79,6 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
         print(user.uid);
         setState(() {
           globals.user=user;
+          downloadUserPhoto(globals.user.email);
         });
       }
     });
@@ -86,7 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //handles dynamic links
   void initDynamicLinks() async {
-    print("in initDynamicLinks");
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
           final Uri deepLink = dynamicLink?.link;
@@ -103,12 +103,27 @@ class _MyHomePageState extends State<MyHomePage> {
     final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance
         .getInitialLink(); //gets the link that opened the app, null if it was not opened by a link
     final Uri deepLink = data?.link;
-    /*
-    if (deepLink != null) {
-      print("INSIDE SECOND IF");
-      addUserToClass(deepLink.toString());
-      print(deepLink);
-    }*/
+  }
+
+  Future<void> downloadUserPhoto(String usrEmail) async {
+    try {
+      String downloadURL = await firebase_storage.FirebaseStorage.instance
+          .ref('uploads/$usrEmail/profile.png')
+          .getDownloadURL();
+      print("Retrieved image for $usrEmail");
+      usrPhotoURL = downloadURL;
+    } catch (e) {
+      print("Couldn't retrieve image for $usrEmail, retrieving default image instead");
+      try {
+        String downloadURL = await firebase_storage.FirebaseStorage.instance
+            .ref('uploads/no_image/Unknown_User.png')
+            .getDownloadURL();
+        print("Retrieved default image for $usrEmail");
+        usrPhotoURL = downloadURL;
+      } catch (e) {
+        print("Failed to retrieve default image for $usrEmail");
+      }
+    }
   }
 
   @override
@@ -127,18 +142,17 @@ class _MyHomePageState extends State<MyHomePage> {
           appBar: AppBar(
             title: Text(widget.title),
             actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.settings,
-                  color: Colors.white,
-                ),
-                onPressed: () {
+              GestureDetector(
+                onTap:() {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => SettingsPage()),
                   );
-                }
-                ,),
+                },
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(usrPhotoURL),
+               ),
+              )
             ],
           ),
           body: Center(
@@ -222,7 +236,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       globals.signedIn = true;
     });
-
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
@@ -767,8 +780,13 @@ class _classViewState extends State<classView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () {
-                //navigate to play game
+              onPressed: () async {
+                //retrieve map of student names and picture urls
+                studentInfo = await gatherStudentData(widget.class_.data(), widget.class_.id);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => matchingGame(classUserData : studentInfo)),
+                );
               },
               child: Text("Play Game")
             ),
@@ -1034,3 +1052,54 @@ class rosterState extends State<roster> {
   }
 }
 /* CLASSES FOR ROSTER END */
+
+
+/* CLASSES FOR GAME START */
+class matchingGame extends StatefulWidget{
+  var classUserData = new Map();
+
+  matchingGame({Key key, @required this.classUserData}) : super(key : key);
+
+  @override
+  matchingGameState createState() => matchingGameState();
+}
+
+class matchingGameState extends State<matchingGame> {
+  List studentNames = [];
+  List studentPhotoURLS = [];
+
+  void splitMap () {
+    widget.classUserData.forEach((key, value) {
+      studentNames.add(key);
+      studentPhotoURLS.add(value);
+    });
+    //shuffle lists for the game
+    studentNames.shuffle();
+    studentPhotoURLS.shuffle();
+  }
+
+  @override
+  void initState() {
+    splitMap();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Roster"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+          ]
+        )
+      )
+    );
+  }
+}
+
+/* CLASSES FOR GAME END */
