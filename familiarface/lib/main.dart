@@ -1239,7 +1239,9 @@ class rosterState extends State<roster> {
 
 /* CLASSES FOR GAME START */
 /* For the game, wrap the CircleAvatar and text widgets in GestureDetectors,
-so when they are tapped a function can then be called
+so when they are tapped a function can then be called. To ensure they matched up the
+right name with the right picture, index the map with the name they pressed, and see
+if the corresponding URL is the one to the picture they tapped
  */
 /* CLASSES FOR GAME START */
 class matchingGame extends StatefulWidget{
@@ -1254,6 +1256,7 @@ class matchingGame extends StatefulWidget{
 class matchingGameState extends State<matchingGame> {
   List studentNames = [];
   List studentPhotoURLS = [];
+  int studentsRemaining = 0;
 
   void splitMap () {
     widget.classUserData.forEach((key, value) {
@@ -1268,25 +1271,59 @@ class matchingGameState extends State<matchingGame> {
   @override
   void initState() {
     splitMap();
+    studentsRemaining = studentNames.length;
     super.initState();
   }
+
+  List<Widget> returnGameWidgets () {
+    for(int i=0; i < studentNames.length; i++)
+      {
+
+      }
+  }
+  /*
+GestureDetector(
+              onTap: () {
+                //validation here
+              },
+              child: Container(
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(studentPhotoURLS[index]),
+                )
+            )
+            );
+   */
+  //use a list view and wrap the text and circle avatar in gesture detectors
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Roster"),
-        ),
-        body: Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-
-                ]
-            )
-        )
+      appBar: AppBar(
+        title: Text("Matching Game"),
+      ),
+      body: ListView.builder(
+        itemCount: studentNames.length,
+        itemBuilder: (context, index) {
+          String name = studentNames[index];
+          return ListTile(
+            leading: GestureDetector(
+              onTap: () {
+                //validation here
+              },
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(studentPhotoURLS[index])
+              ),
+            ),
+            trailing: GestureDetector(
+              onTap: () {
+                //validation here
+              },
+              child: Text(name.substring(0, name.length-7))
+            ),
+          );
+        },
+      ),
     );
   }
 }
-
 /* CLASSES FOR GAME END */
