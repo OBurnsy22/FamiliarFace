@@ -8,8 +8,7 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:bordered_text/bordered_text.dart';
+import 'package:overlay/overlay.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'my_globals.dart' as globals;
 
@@ -1343,12 +1342,11 @@ class matchingGame extends StatefulWidget{
 }
 
 class matchingGameState extends State<matchingGame> {
-  List studentNames = [];
-  List studentPhotoURLS = [];
-  String currentSelectedAvatar = " ";
-  String currentSelectedName = " ";
-  var avatarColorList;
-  var textColorList;
+  //vars for handling data in the game
+  List studentNames = [], studentPhotoURLS = [];
+  String currentSelectedAvatar = " ", currentSelectedName = " ";
+  var avatarColorList, textColorList;
+  bool avatarSelected = false, textSelected = false;
 
   void splitMap () {
     widget.classUserData.forEach((key, value) {
@@ -1392,9 +1390,16 @@ class matchingGameState extends State<matchingGame> {
                         avatarColorList[i] = Colors.white;
                       }
                       avatarColorList[index] = Colors.green;
+                      avatarSelected = true;
                     }
                   else{
                     avatarColorList[index] = Colors.white;
+                    avatarSelected = false;
+                  }
+                  //check if there is a selection on both sides
+                  if(avatarSelected && textSelected)
+                  {
+                    selectionValidation();
                   }
                 });
               },
@@ -1418,9 +1423,16 @@ class matchingGameState extends State<matchingGame> {
                       textColorList[i] = Colors.black;
                     }
                     textColorList[index] = Colors.green;
+                    textSelected = true;
                   }
                   else{
                     textColorList[index] = Colors.black;
+                    textSelected = false;
+                  }
+                  //check if there is a selection on both sides
+                  if(avatarSelected && textSelected)
+                  {
+                    selectionValidation();
                   }
                 });
               },
@@ -1435,6 +1447,49 @@ class matchingGameState extends State<matchingGame> {
         },
       ),
     );
+  }
+
+  /*this function will check if the users selected avatar lines up with
+  the corresponding name.
+   */
+  void selectionValidation() {
+    /*
+      if they guessed correctly, remove the corresponding name and url
+      from their respective lists
+     */
+    if(widget.classUserData[currentSelectedName] == currentSelectedAvatar)
+      {
+        print("Correct Match");
+        /*return CustomOverlay(
+            context: context,
+            overlayWidget: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    "Correct"
+                  )
+                )
+              )
+            )
+        );*/
+        studentNames.remove(currentSelectedName);
+        studentPhotoURLS.remove(currentSelectedAvatar);
+      }
+    else
+      {
+       print("Incorrect Match");
+      }
+    //reset the colors for both lists
+    for(int i=0; i<textColorList.length; i++)
+    {
+      textColorList[i] = Colors.black;
+      avatarColorList[i] = Colors.white;
+    }
+    //reset the bools for selection
+    avatarSelected = false;
+    textSelected = false;
   }
 }
 /* CLASSES FOR GAME END */
