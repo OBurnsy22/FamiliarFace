@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:bordered_text/bordered_text.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'my_globals.dart' as globals;
 
@@ -1344,6 +1345,10 @@ class matchingGame extends StatefulWidget{
 class matchingGameState extends State<matchingGame> {
   List studentNames = [];
   List studentPhotoURLS = [];
+  String currentSelectedAvatar = " ";
+  String currentSelectedName = " ";
+  var avatarColorList;
+  var textColorList;
 
   void splitMap () {
     widget.classUserData.forEach((key, value) {
@@ -1358,6 +1363,9 @@ class matchingGameState extends State<matchingGame> {
   @override
   void initState() {
     splitMap();
+    //initialize the color list
+    avatarColorList = List.filled(studentNames.length, Colors.white, growable: false);
+    textColorList = List.filled(studentNames.length, Colors.black, growable: false);
     super.initState();
   }
 
@@ -1375,17 +1383,35 @@ class matchingGameState extends State<matchingGame> {
           return ListTile(
             leading: GestureDetector(
               onTap: () {
-                //validation here
+                setState(() {
+                  currentSelectedAvatar = studentPhotoURLS[index];
+                  //switch the color of the selected avatar
+                  (avatarColorList[index] == Colors.white ? (avatarColorList[index] = Colors.green) : (avatarColorList[index] = Colors.white));
+                });
               },
               child: CircleAvatar(
-                backgroundImage: NetworkImage(studentPhotoURLS[index])
+                radius: 30,
+                backgroundColor: avatarColorList[index],
+                child: CircleAvatar(
+                  radius: 25,
+                  backgroundImage: NetworkImage(studentPhotoURLS[index]),
+                )
               ),
             ),
             trailing: GestureDetector(
               onTap: () {
-                //validation here
+                setState(() {
+                  currentSelectedName = studentNames[index];
+                  //switch the color of the selected text
+                  (textColorList[index] == Colors.black ? (textColorList[index] = Colors.green) : (textColorList[index] = Colors.black));
+                });
               },
-              child: Text(name.substring(0, name.length-7))
+              child: Text(
+                name.substring(0, name.length-7),
+                style: TextStyle(
+                  color: textColorList[index]
+                ),
+              )
             ),
           );
         },
