@@ -1385,8 +1385,17 @@ class matchingGameState extends State<matchingGame> {
               onTap: () {
                 setState(() {
                   currentSelectedAvatar = studentPhotoURLS[index];
-                  //switch the color of the selected avatar
-                  (avatarColorList[index] == Colors.white ? (avatarColorList[index] = Colors.green) : (avatarColorList[index] = Colors.white));
+                  if(avatarColorList[index] == Colors.white)
+                    {
+                      for(int i=0; i<avatarColorList.length; i++)
+                      {
+                        avatarColorList[i] = Colors.white;
+                      }
+                      avatarColorList[index] = Colors.green;
+                    }
+                  else{
+                    avatarColorList[index] = Colors.white;
+                  }
                 });
               },
               child: CircleAvatar(
@@ -1402,8 +1411,17 @@ class matchingGameState extends State<matchingGame> {
               onTap: () {
                 setState(() {
                   currentSelectedName = studentNames[index];
-                  //switch the color of the selected text
-                  (textColorList[index] == Colors.black ? (textColorList[index] = Colors.green) : (textColorList[index] = Colors.black));
+                  if(textColorList[index] == Colors.black)
+                  {
+                    for(int i=0; i<textColorList.length; i++)
+                    {
+                      textColorList[i] = Colors.black;
+                    }
+                    textColorList[index] = Colors.green;
+                  }
+                  else{
+                    textColorList[index] = Colors.black;
+                  }
                 });
               },
               child: Text(
