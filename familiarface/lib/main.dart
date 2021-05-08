@@ -878,6 +878,12 @@ class _classViewState extends State<classView> {
   var studentInfo = new Map();
   var classData = new Map();
   bool varsInitialized = false;
+  Map <String, int> gameData = {
+    "gamesPlayed": 0,
+    "accuracy": 0,
+    "correctGuess": 0,
+    "totalGuess": 0,
+  };
 
   Future <void> populateStudentInfo() async {
     studentInfo = await gatherStudentData(widget.class_.data(), widget.class_.id);
@@ -911,7 +917,7 @@ class _classViewState extends State<classView> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) =>
-                              matchingGame(classUserData: studentInfo)),
+                              matchingGame(classUserData: studentInfo, classData: classData, className: widget.class_.id)),
                         );
                       },
                       child: Text("Play Game")
@@ -971,7 +977,7 @@ class _classViewState extends State<classView> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) =>
-                              matchingGame(classUserData: studentInfo)),
+                              matchingGame(classUserData: studentInfo, classData: classData, className: widget.class_.id)),
                         );
                       },
                       child: Text("Play Game")
@@ -1334,8 +1340,10 @@ if the corresponding URL is the one to the picture they tapped
 /* CLASSES FOR GAME START */
 class matchingGame extends StatefulWidget{
   var classUserData = new Map();
+  var classData = new Map();
+  String className = " ";
 
-  matchingGame({Key key, @required this.classUserData}) : super(key : key);
+  matchingGame({Key key, @required this.classUserData, this.classData, this.className}) : super(key : key);
 
   @override
   matchingGameState createState() => matchingGameState();
@@ -1364,26 +1372,30 @@ class matchingGameState extends State<matchingGame> {
     //initialize the color list
     avatarColorList = List.filled(studentNames.length, Colors.white, growable: false);
     textColorList = List.filled(studentNames.length, Colors.black, growable: false);
+    //increment games played
+    widget.classData["gamesPlayed"] += 1;
     super.initState();
   }
 
   //use a list view and wrap the text and circle avatar in gesture detectors
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Matching Game"),
-      ),
-      body: ListView.builder(
-        itemCount: studentNames.length,
-        itemBuilder: (context, index) {
-          String name = studentNames[index];
-          return ListTile(
-            leading: GestureDetector(
-              onTap: () {
-                setState(() {
-                  currentSelectedAvatar = studentPhotoURLS[index];
-                  if(avatarColorList[index] == Colors.white)
+    if(studentNames.length > 0) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("Matching Game"),
+          automaticallyImplyLeading: false,
+        ),
+        body: ListView.builder(
+          itemCount: studentNames.length,
+          itemBuilder: (context, index) {
+            String name = studentNames[index];
+            return ListTile(
+              leading: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    currentSelectedAvatar = studentPhotoURLS[index];
+                    if(avatarColorList[index] == Colors.white)
                     {
                       for(int i=0; i<avatarColorList.length; i++)
                       {
@@ -1392,67 +1404,73 @@ class matchingGameState extends State<matchingGame> {
                       avatarColorList[index] = Colors.green;
                       avatarSelected = true;
                     }
-                  else{
-                    avatarColorList[index] = Colors.white;
-                    avatarSelected = false;
-                  }
-                  //check if there is a selection on both sides
-                  if(avatarSelected && textSelected)
-                  {
-                    selectionValidation();
-                  }
-                });
-              },
-              child: CircleAvatar(
-                radius: 30,
-                backgroundColor: avatarColorList[index],
-                child: CircleAvatar(
-                  radius: 25,
-                  backgroundImage: NetworkImage(studentPhotoURLS[index]),
-                )
-              ),
-            ),
-            trailing: GestureDetector(
-              onTap: () {
-                setState(() {
-                  currentSelectedName = studentNames[index];
-                  if(textColorList[index] == Colors.black)
-                  {
-                    for(int i=0; i<textColorList.length; i++)
-                    {
-                      textColorList[i] = Colors.black;
+                    else{
+                      avatarColorList[index] = Colors.white;
+                      avatarSelected = false;
                     }
-                    textColorList[index] = Colors.green;
-                    textSelected = true;
-                  }
-                  else{
-                    textColorList[index] = Colors.black;
-                    textSelected = false;
-                  }
-                  //check if there is a selection on both sides
-                  if(avatarSelected && textSelected)
-                  {
-                    selectionValidation();
-                  }
-                });
-              },
-              child: Text(
-                name.substring(0, name.length-7),
-                style: TextStyle(
-                  color: textColorList[index]
+                    //check if there is a selection on both sides
+                    if(avatarSelected && textSelected)
+                    {
+                      selectionValidation();
+                    }
+                  });
+                },
+                child: CircleAvatar(
+                    radius: 30,
+                    backgroundColor: avatarColorList[index],
+                    child: CircleAvatar(
+                      radius: 25,
+                      backgroundImage: NetworkImage(studentPhotoURLS[index]),
+                    )
                 ),
-              )
-            ),
-          );
-        },
-      ),
-    );
+              ),
+              trailing: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      currentSelectedName = studentNames[index];
+                      if(textColorList[index] == Colors.black)
+                      {
+                        for(int i=0; i<textColorList.length; i++)
+                        {
+                          textColorList[i] = Colors.black;
+                        }
+                        textColorList[index] = Colors.green;
+                        textSelected = true;
+                      }
+                      else{
+                        textColorList[index] = Colors.black;
+                        textSelected = false;
+                      }
+                      //check if there is a selection on both sides
+                      if(avatarSelected && textSelected)
+                      {
+                        selectionValidation();
+                      }
+                    });
+                  },
+                  child: Text(
+                    name.substring(0, name.length-7),
+                    style: TextStyle(
+                        color: textColorList[index]
+                    ),
+                  )
+              ),
+            );
+          },
+        ),
+      );
+    } else {
+      //return back to class view and update the game data
+      updateGameStats();
+      Navigator.pop(context);
+    }
   }
 
   /*this function will check if the users selected avatar lines up with
-  the corresponding name.
+  the corresponding name. It will also update the game data map respectively
    */
   void selectionValidation() {
+    widget.classData["totalGuess"] += 1;
     /*
       if they guessed correctly, remove the corresponding name and url
       from their respective lists
@@ -1460,27 +1478,15 @@ class matchingGameState extends State<matchingGame> {
     if(widget.classUserData[currentSelectedName] == currentSelectedAvatar)
       {
         print("Correct Match");
-        /*return CustomOverlay(
-            context: context,
-            overlayWidget: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text(
-                    "Correct"
-                  )
-                )
-              )
-            )
-        );*/
         studentNames.remove(currentSelectedName);
         studentPhotoURLS.remove(currentSelectedAvatar);
+        widget.classData["correctGuess"] += 1;
       }
     else
       {
        print("Incorrect Match");
       }
+
     //reset the colors for both lists
     for(int i=0; i<textColorList.length; i++)
     {
@@ -1490,6 +1496,23 @@ class matchingGameState extends State<matchingGame> {
     //reset the bools for selection
     avatarSelected = false;
     textSelected = false;
+    //update accuracy
+    widget.classData["accuracy"] = (widget.classData["correctGuess"] / widget.classData["totalGuess"]);
+  }
+
+  Future<void> updateGameStats() {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    firestore
+        .collection(globals.user.email)
+        .doc(widget.className)
+        .update({
+      'accuracy' : widget.classData["accuracy"],
+      'totalGuess' : widget.classData["totalGuess"],
+      'corectGuess' : widget.classData["correctGuess"],
+      'gamesPlayed' : widget.classData["gamesPlayed"]
+    })
+        .then((value) => print("Game stats updated"))
+        .catchError((error) => print(error));
   }
 }
 /* CLASSES FOR GAME END */
