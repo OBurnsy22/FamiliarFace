@@ -1123,9 +1123,21 @@ class _classViewState extends State<classView> {
   }
 
   //deletes specified class from firebase
-  Future<void> deleteFromFirebase () {
+  Future<void> deleteFromFirebase () async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    firestore.collection(globals.user.email).doc(widget.class_.id).delete();
+    //get a list of users in this class
+    List tempStudentList;
+    Future<DocumentSnapshot> docSnap = firestore.collection(globals.user.email).doc(widget.class_.id).get();
+    docSnap.then ( (DocumentSnapshot classDoc) => {
+      tempStudentList = new List<String>.from(classDoc["students"]),
+      for(int i=0; i<tempStudentList.length; i++)
+        {
+          //delete the class from everyone else who is enrolled in it
+          firestore.collection(tempStudentList[i]).doc(widget.class_.id).delete()
+        },
+      //delete the class from the class owners database
+      firestore.collection(globals.user.email).doc(widget.class_.id).delete()
+    });
 
     //pop three times so we are back at the home page
     int count = 0;
