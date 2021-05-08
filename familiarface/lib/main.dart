@@ -998,8 +998,7 @@ class _classViewState extends State<classView> {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        //Let the user leave the class, and ensure to remove them from all other databases of
-                        //users in the same class
+                        leaveClassWarning(context);
                       },
                       child: Text("Leave Class")
                   ),
@@ -1011,6 +1010,39 @@ class _classViewState extends State<classView> {
     } else {
       return CircularProgressIndicator();
     }
+  }
+
+  Future<void> leaveClassWarning (BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('WARNING:'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to leave this class?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Yes'),
+              onPressed: () {
+                deleteIndividualFromFirebase();
+              },
+            ),
+            TextButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> deleteClassWarning (BuildContext context) {
@@ -1044,6 +1076,50 @@ class _classViewState extends State<classView> {
         );
       },
     );
+  }
+
+  Future<void> deleteIndividualFromFirebase() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    //get a list of users in the same class
+    QuerySnapshot snap = await FirebaseFirestore.instance.collection(globals.user.email).get();
+    Map<String, dynamic> userInvClassData;
+    snap.docs.forEach((element) {
+      if(element.id == widget.class_.id){
+        userInvClassData = element.data();
+      }
+    });
+    final List studentList = userInvClassData["students"];
+
+    //delete class from this users database
+    firestore.collection(globals.user.email).doc(widget.class_.id).delete();
+
+    //delete the user from all other student databases
+    for(int i=0; i<studentList.length; i++)
+      {
+        String cur_student = studentList[i];
+        //update the collection minus the user who just left the class
+        List tempStudentList;
+        Future<DocumentSnapshot> docSnap = firestore.collection(cur_student).doc(widget.class_.id).get();
+        docSnap.then( (DocumentSnapshot classDoc) => {
+          tempStudentList = new List<String>.from(classDoc["students"]),
+          //remove the email from the list and update the database
+          tempStudentList.remove(globals.user.email),
+          //update student array
+          firestore
+              .collection(cur_student)
+              .doc(widget.class_.id)
+              .update({
+          'students': tempStudentList,
+          })
+            .then((value) => print("Students array updated for $cur_student"))
+            .catchError((error) => print(error))
+        });
+      }
+    //pop three times so we are back at the home page
+    int count = 0;
+    Navigator.popUntil(context, (route) {
+      return count++ == 3;
+    });
   }
 
   //deletes specified class from firebase
@@ -1256,7 +1332,6 @@ class matchingGame extends StatefulWidget{
 class matchingGameState extends State<matchingGame> {
   List studentNames = [];
   List studentPhotoURLS = [];
-  int studentsRemaining = 0;
 
   void splitMap () {
     widget.classUserData.forEach((key, value) {
@@ -1271,30 +1346,10 @@ class matchingGameState extends State<matchingGame> {
   @override
   void initState() {
     splitMap();
-    studentsRemaining = studentNames.length;
     super.initState();
   }
 
-  List<Widget> returnGameWidgets () {
-    for(int i=0; i < studentNames.length; i++)
-      {
-
-      }
-  }
-  /*
-GestureDetector(
-              onTap: () {
-                //validation here
-              },
-              child: Container(
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(studentPhotoURLS[index]),
-                )
-            )
-            );
-   */
   //use a list view and wrap the text and circle avatar in gesture detectors
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
