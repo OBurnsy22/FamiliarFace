@@ -937,7 +937,7 @@ class _classViewState extends State<classView> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) =>
-                              scoreboard(classData: classData)),
+                              scoreboard(className: widget.class_.id)),
                         );
                       },
                       child: Text("View Scoreboard")
@@ -997,7 +997,7 @@ class _classViewState extends State<classView> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) =>
-                              scoreboard(classData: classData)),
+                              scoreboard(className: widget.class_.id)),
                         );
                       },
                       child: Text("View Scoreboard")
@@ -1181,35 +1181,77 @@ class _classViewState extends State<classView> {
 
 
 /* CLASSES FOR SCOREBOARD START */
-class scoreboard extends StatelessWidget {
- final Map<String, dynamic> classData;
 
- //constructor that requires a Map
- scoreboard({Key key, @required this.classData}) : super(key: key);
+class scoreboard extends StatefulWidget {
+  final String className;
+
+  scoreboard({Key key, @required this.className}) :super(key: key);
+
+  @override
+  scoreboardState createState() => scoreboardState();
+}
+class scoreboardState extends State<scoreboard> {
+  String gamesPlayed = " ";
+  String accuracy = " ";
+  String correctGuess = " ";
+  String totalGuess = " ";
+  bool initialized = false;
+
+  Future<void> retrieveScoreboardData() {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    Future<DocumentSnapshot> docSnap = firestore.collection(globals.user.email).doc(widget.className).get();
+    docSnap.then( (DocumentSnapshot classDoc) => {
+      gamesPlayed = classDoc["gamesPlayed"].toString(),
+      if(classDoc["accuracy"].toString().length > 4)
+      {
+          accuracy = classDoc["accuracy"].toString().substring(0, 4)
+      }
+      else
+      {
+          accuracy = classDoc["accuracy"].toString()
+      },
+      correctGuess = classDoc["correctGuess"].toString(),
+      totalGuess = classDoc["totalGuess"].toString(),
+      setState(() {
+        initialized = true;
+      }),
+    });
+  }
+
+  @override
+  void initState() {
+    retrieveScoreboardData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context){
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Scoreboard"),
-      ),
-      body: ListView(
-        children: [
-          ListTile(
-            title: Text(classData["gamesPlayed"].toString()),
-          ),
-          ListTile(
-            title: Text(classData["accuracy"].toString()),
-          ),
-          ListTile(
-            title: Text(classData["correctGuess"].toString()),
-          ),
-          ListTile(
-            title: Text(classData["totalGuess"].toString()),
-          ),
-        ],
-      )
-    );
+    if(initialized)
+      {
+        return Scaffold(
+            appBar: AppBar(
+              title: Text("Scoreboard"),
+            ),
+            body: ListView(
+              children: [
+                ListTile(
+                  title: Text("Games Played: $gamesPlayed"),
+                ),
+                ListTile(
+                  title: Text("Accuracy: $accuracy%"),
+                ),
+                ListTile(
+                  title: Text("Correct Guesses: $correctGuess"),
+                ),
+                ListTile(
+                  title: Text("Total Guesses: $totalGuess"),
+                ),
+              ],
+            )
+        );
+      } else {
+      return CircularProgressIndicator();
+    }
   }
 }
 /* CLASSES FOR SCOREBOARD END */
