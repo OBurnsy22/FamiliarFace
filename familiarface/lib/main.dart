@@ -1380,7 +1380,6 @@ class matchingGameState extends State<matchingGame> {
   //use a list view and wrap the text and circle avatar in gesture detectors
   @override
   Widget build(BuildContext context) {
-    if(studentNames.length > 0) {
       return Scaffold(
         appBar: AppBar(
           title: Text("Matching Game"),
@@ -1459,11 +1458,6 @@ class matchingGameState extends State<matchingGame> {
           },
         ),
       );
-    } else {
-      //return back to class view and update the game data
-      updateGameStats();
-      Navigator.pop(context);
-    }
   }
 
   /*this function will check if the users selected avatar lines up with
@@ -1498,6 +1492,12 @@ class matchingGameState extends State<matchingGame> {
     textSelected = false;
     //update accuracy
     widget.classData["accuracy"] = (widget.classData["correctGuess"] / widget.classData["totalGuess"]);
+    //check if there are any more game values left, if not update game stats and return
+    if(studentNames.length <= 0)
+      {
+        updateGameStats();
+        Navigator.pop(context);
+      }
   }
 
   Future<void> updateGameStats() {
