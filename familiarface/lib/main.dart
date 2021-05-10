@@ -12,7 +12,6 @@ import 'package:overlay/overlay.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'my_globals.dart' as globals;
 
-
 void main() {
   runApp(MyApp());
 }
@@ -24,20 +23,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'FamiliarFace',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.lightBlue,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
+        primarySwatch: Colors.cyan,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        //https://www.codegrepper.com/code-examples/dart/set+width+to+elevatedbutton+flutter
       ),
       home: MyHomePage(title: 'FamiliarFace'),
     );
@@ -71,7 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void initCurrentUser() {
-    print("in init current user");
     FirebaseAuth.instance
         .authStateChanges()
         .listen((User user) {
@@ -86,7 +73,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //handles dynamic links
   void initDynamicLinks() async {
-    print("in initDynamicLinks");
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
           final Uri deepLink = dynamicLink?.link;
@@ -103,12 +89,6 @@ class _MyHomePageState extends State<MyHomePage> {
     final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance
         .getInitialLink(); //gets the link that opened the app, null if it was not opened by a link
     final Uri deepLink = data?.link;
-    /*
-    if (deepLink != null) {
-      print("INSIDE SECOND IF");
-      addUserToClass(deepLink.toString());
-      print(deepLink);
-    }*/
   }
 
   @override
@@ -121,7 +101,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override     // This method is rerun every time setState is called, for instance as done
   Widget build(BuildContext context) {
     if(_initialized) { //If firebase is initialized
-      //print(globals.signedIn);
       if (globals.signedIn && globals.user != null) { //IF USER IS SIGNED IN
         return Scaffold(
           appBar: AppBar(
@@ -203,7 +182,6 @@ class _MyHomePageState extends State<MyHomePage> {
   //signs the user in through google
   Future<UserCredential> googleSignIn() async {  //look at firebase auth for reference
     // Trigger the authentication flow
-    print("in google sign in");
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
 
     // Obtain the auth details from the request
@@ -1202,14 +1180,30 @@ class scoreboardState extends State<scoreboard> {
     Future<DocumentSnapshot> docSnap = firestore.collection(globals.user.email).doc(widget.className).get();
     docSnap.then( (DocumentSnapshot classDoc) => {
       gamesPlayed = classDoc["gamesPlayed"].toString(),
-      if(classDoc["accuracy"].toString().length > 4)
-      {
-          accuracy = classDoc["accuracy"].toString().substring(0, 4)
-      }
+      accuracy = classDoc["accuracy"].toString(),
+      print(accuracy),
+      //case 1 and 2, the size is 3, so its either 1.0 or 0.'num'
+      if(accuracy.length == 3)
+        {
+          if(accuracy[0] == "1")
+            {
+              print("in case 1"),
+              accuracy == "100"
+            }
+          else
+            {
+              print("in case 2"),
+              accuracy = accuracy.substring(2),
+              accuracy += "0"
+            }
+        }
+      //case 3, its a very long repeating value
       else
-      {
-          accuracy = classDoc["accuracy"].toString()
-      },
+        {
+          print("in case 3"),
+          print(accuracy),
+          accuracy = accuracy.substring(2,4)
+        },
       correctGuess = classDoc["correctGuess"].toString(),
       totalGuess = classDoc["totalGuess"].toString(),
       setState(() {
