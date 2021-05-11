@@ -26,22 +26,27 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         //https://www.codegrepper.com/code-examples/dart/set+width+to+elevatedbutton+flutter
       ),
-      home: MyHomePage(title: 'FamiliarFace'),
+      home: login(),
     );
   }
 }
 
-/* CLASSES FOR HOME PAGE START */
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+/* CLASSES FOR LOGIN START */
+class login extends StatefulWidget {
 
-  final String title;
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  loginState createState() => loginState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class loginState extends State<login> {
   bool _initialized = false;
+
+  @override
+  void initState() {
+    initializeFlutterFire();
+    super.initState();
+  }
 
   //initializes firebase
   Future<void> initializeFlutterFire() async {
@@ -70,129 +75,10 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  //handles dynamic links
-  void initDynamicLinks() async {
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-          final Uri deepLink = dynamicLink?.link;
-          if (deepLink != null) { //THIS IF WILL CATCH THE DEEP LINK
-            print(deepLink);
-            addUserToClass(deepLink.toString());
-          }
-        },
-        onError: (OnLinkErrorException e) async {
-          print('onLinkError');
-          print(e.message);
-        }
-    );
-    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance
-        .getInitialLink(); //gets the link that opened the app, null if it was not opened by a link
-    final Uri deepLink = data?.link;
-  }
-
   @override
-  void initState() {
-    super.initState();
-    initializeFlutterFire();
-    initDynamicLinks();
-  }
-
-  @override     // This method is rerun every time setState is called, for instance as done
-  Widget build(BuildContext context) {
-    if(_initialized) { //If firebase is initialized
-      if (globals.signedIn && globals.user != null) { //IF USER IS SIGNED IN
-        return Scaffold(
-          backgroundColor: Color(0xFFE0F7FA),
-          appBar: AppBar(
-            centerTitle: true,
-            title: Text(
-                widget.title,
-                style: TextStyle(
-                  fontSize: 30
-                ),
-            ),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.settings,
-                  color: Colors.white,
-                  size: 40,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SettingsPage()),
-                  );
-                }
-                ,),
-            ],
-          ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.only(bottom: 65.0),
-                  child: Icon(
-                    Icons.face_retouching_natural,
-                    size: 200,
-                  ),
-                ),
-                Container(
-                    width: 250.0,
-                    height: 50.0,
-                    margin: EdgeInsets.only(bottom: 10.0),
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          onPrimary: Color(0xFFE0F7FA),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(32.0),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => CreateClass()),
-                          );
-                        },
-                        child: Text(
-                            "Create A Class",
-                            style: TextStyle(
-                              fontSize: 22,
-                            ),
-                        )
-                    ),
-                ),
-                Container(
-                  width: 250.0,
-                  height: 50.0,
-                  margin: EdgeInsets.only(top: 10.0, bottom: 100),
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        onPrimary: Color(0xFFE0F7FA),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32.0),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MyClasses()),
-                        );
-                      },
-                      child: Text(
-                          "My Classes",
-                          style: TextStyle(
-                            fontSize: 22,
-                          ),
-                      )
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      } else { //IF USER IS NOT SIGNED IN
+  Widget build(BuildContext context){
+    if(_initialized)
+      {
         return Scaffold(
           backgroundColor: Color(0xFFE0F7FA),
           body: Center(
@@ -236,8 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         );
-      }
-    } else { //If firebase is not initialized
+      } else { //firebase is not initialized
       return CircularProgressIndicator(
         backgroundColor: Color(0xFFE0F7FA),
       );
@@ -250,6 +135,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> singInErrorCatcher() async {
     try{
       await googleSignIn();
+      Navigator.push(
+           context,
+          MaterialPageRoute(builder: (context) => MyHomePage()),
+      );
     } catch(error) {
       print(error);
     }
@@ -279,6 +168,142 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
+}
+
+/* CLASSES FOR LOGIN END */
+
+
+
+/* CLASSES FOR HOME PAGE START */
+class MyHomePage extends StatefulWidget {
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+
+  //handles dynamic links
+  void initDynamicLinks() async {
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          final Uri deepLink = dynamicLink?.link;
+          if (deepLink != null) { //THIS IF WILL CATCH THE DEEP LINK
+            print(deepLink);
+            addUserToClass(deepLink.toString());
+          }
+        },
+        onError: (OnLinkErrorException e) async {
+          print('onLinkError');
+          print(e.message);
+        }
+    );
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance
+        .getInitialLink(); //gets the link that opened the app, null if it was not opened by a link
+    final Uri deepLink = data?.link;
+  }
+
+  @override
+  void initState() {
+    initDynamicLinks();
+    super.initState();
+  }
+
+  @override     // This method is rerun every time setState is called, for instance as done
+  Widget build(BuildContext context) {
+        return Scaffold(
+          backgroundColor: Color(0xFFE0F7FA),
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text(
+              "FamiliarFace",
+              style: TextStyle(
+                  fontSize: 30
+              ),
+            ),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(
+                  Icons.settings,
+                  color: Colors.white,
+                  size: 40,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SettingsPage()),
+                  );
+                }
+                ,),
+            ],
+          ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(bottom: 65.0),
+                  child: Icon(
+                    Icons.face_retouching_natural,
+                    size: 200,
+                  ),
+                ),
+                Container(
+                  width: 250.0,
+                  height: 50.0,
+                  margin: EdgeInsets.only(bottom: 10.0),
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        onPrimary: Color(0xFFE0F7FA),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32.0),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => CreateClass()),
+                        );
+                      },
+                      child: Text(
+                        "Create A Class",
+                        style: TextStyle(
+                          fontSize: 22,
+                        ),
+                      )
+                  ),
+                ),
+                Container(
+                  width: 250.0,
+                  height: 50.0,
+                  margin: EdgeInsets.only(top: 10.0, bottom: 100),
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        onPrimary: Color(0xFFE0F7FA),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32.0),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyClasses()),
+                        );
+                      },
+                      child: Text(
+                        "My Classes",
+                        style: TextStyle(
+                          fontSize: 22,
+                        ),
+                      )
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+  }
+
 
   Future<void> incorrectDomainName() {
     return showDialog<void>(
@@ -492,9 +517,9 @@ class _SettingsPageState extends State<SettingsPage> {
         appBar: AppBar(
           centerTitle: true,
           title: Text(
-              'Settings',
-               style: TextStyle(
-                  fontSize: 30
+            'Settings',
+            style: TextStyle(
+                fontSize: 30
             ),
           ),
         ),
@@ -571,10 +596,12 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       globals.user = null;
       globals.signedIn = false;
+      //pop twice to return to login screen
+      int count = 0;
+      Navigator.popUntil(context, (route) {
+        return count ++ == 2;
+      });
     });
-    Navigator.pop(context);
-    //force a naviagtion event to go back to the homepage
-    //pop the entire stack and push the home page back onto the stack
   }
 
   Future<void> imageSelectOptions() {
@@ -711,19 +738,19 @@ class _CreateClassState extends State<CreateClass> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-            'Create A Class',
-             style: TextStyle(
-                fontSize: 30
+          'Create A Class',
+          style: TextStyle(
+              fontSize: 30
           ),
         ),
       ),
       body: Center(
-          child: Column(
+        child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget> [
               AddClassForm(),
             ]
-          ),
+        ),
       ),
     );
   }
@@ -736,11 +763,11 @@ class _CreateClassState extends State<CreateClass> {
   //form for creating a class
   Form AddClassForm() {
     return Form(
-      key: form_key,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: input() + buttons()
-      )
+        key: form_key,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: input() + buttons()
+        )
     );
   }
 
@@ -800,24 +827,24 @@ class _CreateClassState extends State<CreateClass> {
   List<Widget> buttons() {
     return [
       Container(
-        width: 250.0,
-        height: 50.0,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            onPrimary: Color(0xFFE0F7FA),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(32.0),
+          width: 250.0,
+          height: 50.0,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              onPrimary: Color(0xFFE0F7FA),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(32.0),
+              ),
             ),
-          ),
-          key: Key("submit_key"),
-          onPressed: validateForm,
-          child: Text(
-            "Create Class",
-            style: TextStyle(
-              fontSize: 22,
+            key: Key("submit_key"),
+            onPressed: validateForm,
+            child: Text(
+              "Create Class",
+              style: TextStyle(
+                fontSize: 22,
+              ),
             ),
-          ),
-        )
+          )
       ),
     ];
   }
@@ -956,9 +983,9 @@ class _MyClassesState extends State<MyClasses> {
         appBar: AppBar(
           centerTitle: true,
           title: Text(
-              'My Classes',
-               style: TextStyle(
-                  fontSize: 30
+            'My Classes',
+            style: TextStyle(
+                fontSize: 30
             ),
           ),
         ),
@@ -968,13 +995,13 @@ class _MyClassesState extends State<MyClasses> {
             var name = allClasses[index];
             return Card(
               child:ListTile(
-                title: Text(name.id.substring(0, name.id.length-7)),
-                onTap:() {
-                  Navigator.push(
-                   context,
-                    MaterialPageRoute(builder: (context) => classView(class_ : allClasses[index])),
-                   );
-                 }
+                  title: Text(name.id.substring(0, name.id.length-7)),
+                  onTap:() {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => classView(class_ : allClasses[index])),
+                    );
+                  }
               ),
             );
           },
@@ -1055,10 +1082,10 @@ class _classViewState extends State<classView> {
           appBar: AppBar(
             centerTitle: true,
             title: Text(
-                widget.class_.id.substring(0, widget.class_.id.length - 7),
-                style: TextStyle(
-                    fontSize: 30
-                ),
+              widget.class_.id.substring(0, widget.class_.id.length - 7),
+              style: TextStyle(
+                  fontSize: 30
+              ),
             ),
           ),
           body: Center(
@@ -1084,112 +1111,112 @@ class _classViewState extends State<classView> {
                           );
                         },
                         child: Text(
-                            "Play Game",
-                            style: TextStyle(
-                              fontSize: 20,
-                           ),
+                          "Play Game",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
                         )
                     ),
                   ),
                   Container(
-                      width: 250.0,
-                      height: 50.0,
-                      margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            onPrimary: Color(0xFFE0F7FA),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32.0),
-                            ),
+                    width: 250.0,
+                    height: 50.0,
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Color(0xFFE0F7FA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
                           ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) =>
-                                  roster(classUserData: studentInfo)),
-                            );
-                          },
-                          child: Text(
-                              "View Roster",
-                              style: TextStyle(
-                                fontSize: 20,
-                            ),
-                          )
-                      ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>
+                                roster(classUserData: studentInfo)),
+                          );
+                        },
+                        child: Text(
+                          "View Roster",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        )
+                    ),
                   ),
                   Container(
-                      width: 250.0,
-                      height: 50.0,
-                      margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            onPrimary: Color(0xFFE0F7FA),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32.0),
-                            ),
+                    width: 250.0,
+                    height: 50.0,
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Color(0xFFE0F7FA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
                           ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) =>
-                                  scoreboard(className: widget.class_.id)),
-                            );
-                          },
-                          child: Text(
-                              "View Scoreboard",
-                              style: TextStyle(
-                                fontSize: 20,
-                             ),
-                          )
-                      ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>
+                                scoreboard(className: widget.class_.id)),
+                          );
+                        },
+                        child: Text(
+                          "View Scoreboard",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        )
+                    ),
                   ),
                   Container(
-                      width: 250.0,
-                      height: 50.0,
-                      margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            onPrimary: Color(0xFFE0F7FA),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32.0),
-                            ),
+                    width: 250.0,
+                    height: 50.0,
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Color(0xFFE0F7FA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
                           ),
-                          onPressed: () async {
-                            var dynamicLink = await generateDynamicLink(
-                                widget.class_.id);
-                            print(dynamicLink);
-                            Clipboard.setData(
-                                new ClipboardData(text: dynamicLink.toString()));
-                          },
-                          child: Text(
-                              "Generate and Copy Link",
-                               style: TextStyle(
-                                 fontSize: 20,
-                              ),
-                          )
-                      ),
+                        ),
+                        onPressed: () async {
+                          var dynamicLink = await generateDynamicLink(
+                              widget.class_.id);
+                          print(dynamicLink);
+                          Clipboard.setData(
+                              new ClipboardData(text: dynamicLink.toString()));
+                        },
+                        child: Text(
+                          "Generate and Copy Link",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        )
+                    ),
                   ),
                   Container(
-                      width: 250.0,
-                      height: 50.0,
-                      margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            onPrimary: Color(0xFFE0F7FA),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32.0),
-                            ),
+                    width: 250.0,
+                    height: 50.0,
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Color(0xFFE0F7FA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
                           ),
-                          onPressed: () {
-                            deleteClassWarning(context);
-                          },
-                          child: Text(
-                              "Delete Class",
-                              style: TextStyle(
-                                fontSize: 20,
-                               ),
-                          )
-                      ),
+                        ),
+                        onPressed: () {
+                          deleteClassWarning(context);
+                        },
+                        child: Text(
+                          "Delete Class",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        )
+                    ),
                   ),
                 ]
             ),
@@ -1406,26 +1433,26 @@ class _classViewState extends State<classView> {
 
     //delete the user from all other student databases
     for(int i=0; i<studentList.length; i++)
-      {
-        String cur_student = studentList[i];
-        //update the collection minus the user who just left the class
-        List tempStudentList;
-        Future<DocumentSnapshot> docSnap = firestore.collection(cur_student).doc(widget.class_.id).get();
-        docSnap.then( (DocumentSnapshot classDoc) => {
-          tempStudentList = new List<String>.from(classDoc["students"]),
-          //remove the email from the list and update the database
-          tempStudentList.remove(globals.user.email),
-          //update student array
-          firestore
-              .collection(cur_student)
-              .doc(widget.class_.id)
-              .update({
+    {
+      String cur_student = studentList[i];
+      //update the collection minus the user who just left the class
+      List tempStudentList;
+      Future<DocumentSnapshot> docSnap = firestore.collection(cur_student).doc(widget.class_.id).get();
+      docSnap.then( (DocumentSnapshot classDoc) => {
+        tempStudentList = new List<String>.from(classDoc["students"]),
+        //remove the email from the list and update the database
+        tempStudentList.remove(globals.user.email),
+        //update student array
+        firestore
+            .collection(cur_student)
+            .doc(widget.class_.id)
+            .update({
           'students': tempStudentList,
-          })
+        })
             .then((value) => print("Students array updated for $cur_student"))
             .catchError((error) => print(error))
-        });
-      }
+      });
+    }
     //pop three times so we are back at the home page
     int count = 0;
     Navigator.popUntil(context, (route) {
@@ -1453,7 +1480,7 @@ class _classViewState extends State<classView> {
     //pop three times so we are back at the home page
     int count = 0;
     Navigator.popUntil(context, (route) {
-        return count++ == 3;
+      return count++ == 3;
     });
   }
 
@@ -1548,64 +1575,64 @@ class scoreboardState extends State<scoreboard> {
   @override
   Widget build(BuildContext context){
     if(initialized)
-      {
-        return Scaffold(
-            backgroundColor: Color(0xFFE0F7FA),
-            appBar: AppBar(
-              centerTitle: true,
-              title: Text(
-                  "Scoreboard",
-                  style: TextStyle(
-                      fontSize: 30
-                ),
+    {
+      return Scaffold(
+          backgroundColor: Color(0xFFE0F7FA),
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text(
+              "Scoreboard",
+              style: TextStyle(
+                  fontSize: 30
               ),
             ),
-            body: ListView(
-              children: [
-                Card(
-                  child: ListTile(
-                    title: Text(
-                        "Games Played: $gamesPlayed",
-                         style: TextStyle(
-                         fontSize: 20,
-                      ),
+          ),
+          body: ListView(
+            children: [
+              Card(
+                child: ListTile(
+                  title: Text(
+                    "Games Played: $gamesPlayed",
+                    style: TextStyle(
+                      fontSize: 20,
                     ),
                   ),
                 ),
-                Card(
-                  child: ListTile(
-                    title: Text(
-                        "Accuracy: $accuracy%",
-                        style: TextStyle(
-                          fontSize: 20,
-                      ),
+              ),
+              Card(
+                child: ListTile(
+                  title: Text(
+                    "Accuracy: $accuracy%",
+                    style: TextStyle(
+                      fontSize: 20,
                     ),
                   ),
                 ),
-                Card(
-                  child: ListTile(
-                    title: Text(
-                        "Correct Guesses: $correctGuess",
-                        style: TextStyle(
-                          fontSize: 20,
-                      ),
+              ),
+              Card(
+                child: ListTile(
+                  title: Text(
+                    "Correct Guesses: $correctGuess",
+                    style: TextStyle(
+                      fontSize: 20,
                     ),
                   ),
                 ),
-                Card(
-                  child: ListTile(
-                    title: Text(
-                        "Total Guesses: $totalGuess",
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
+              ),
+              Card(
+                child: ListTile(
+                  title: Text(
+                    "Total Guesses: $totalGuess",
+                    style: TextStyle(
+                      fontSize: 20,
                     ),
                   ),
                 ),
-              ],
-            )
-        );
-      } else {
+              ),
+            ],
+          )
+      );
+    } else {
       return CircularProgressIndicator(
         backgroundColor: Color(0xFFE0F7FA),
       );
@@ -1627,28 +1654,28 @@ Future<Map> gatherStudentData(Map<String, dynamic> classData, String className) 
 
   //using student emails, retrieve their names from their database
   for(int i=0; i<studentEmailList.length; i++)
-    {
-      String studentName;
-      QuerySnapshot snap = await FirebaseFirestore.instance.collection(studentEmailList[i]).get();
-      snap.docs.forEach((element) {
-        if(element.id == className){
-          Map<String, dynamic> data = element.data();
-          //capture the students name
-          studentName = data["name"];
-          //append 6 digit number at the end to ensure uniqueness
-          String studentUniqueID = "#";
-          var rng = new Random();
-          for (var i = 0; i < 6; i++) {//generates 0-9
-            studentUniqueID += rng.nextInt(10).toString();
-          }
-          studentName += studentUniqueID;
+  {
+    String studentName;
+    QuerySnapshot snap = await FirebaseFirestore.instance.collection(studentEmailList[i]).get();
+    snap.docs.forEach((element) {
+      if(element.id == className){
+        Map<String, dynamic> data = element.data();
+        //capture the students name
+        studentName = data["name"];
+        //append 6 digit number at the end to ensure uniqueness
+        String studentUniqueID = "#";
+        var rng = new Random();
+        for (var i = 0; i < 6; i++) {//generates 0-9
+          studentUniqueID += rng.nextInt(10).toString();
         }
-      });
-      //now retrieve their corresponding pictures from firebase
-      String userPictureURL = await downloadUserPhoto(studentEmailList[i]);
-      //add to map
-      studentInfo[studentName] = userPictureURL;
-    }
+        studentName += studentUniqueID;
+      }
+    });
+    //now retrieve their corresponding pictures from firebase
+    String userPictureURL = await downloadUserPhoto(studentEmailList[i]);
+    //add to map
+    studentInfo[studentName] = userPictureURL;
+  }
   //map full of student names and corresponding images
   print(studentInfo);
   //pass this map to the roster page
@@ -1713,29 +1740,29 @@ class rosterState extends State<roster> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-            "Roster",
-            style: TextStyle(
-                fontSize: 30
-            ),
+          "Roster",
+          style: TextStyle(
+              fontSize: 30
+          ),
         ),
       ),
       body: ListView.builder(
         itemCount: widget.classUserData.length,
         itemBuilder: (context, index) {
-            String name = studentNames[index];
-            String URL = studentPhotoURLS[index];
-            return Container(
-              height: 100,
-               child: Card(
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(URL),
-                      radius: 50,
-                    ),
-                    title: Text(name.substring(0, name.length-7)),
-                  ),
+          String name = studentNames[index];
+          String URL = studentPhotoURLS[index];
+          return Container(
+            height: 100,
+            child: Card(
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(URL),
+                  radius: 50,
                 ),
-            );
+                title: Text(name.substring(0, name.length-7)),
+              ),
+            ),
+          );
         },
       ),
     );
@@ -1811,42 +1838,75 @@ class matchingGameState extends State<matchingGame> {
   @override
   Widget build(BuildContext context) {
     if(initialized)
-      {
-        return Scaffold(
-          backgroundColor: Color(0xFFE0F7FA),
-          appBar: AppBar(
-            centerTitle: true,
-            title: Text(
-                "Matching Game",
-                style: TextStyle(
-                    fontSize: 30
-                ),
+    {
+      return Scaffold(
+        backgroundColor: Color(0xFFE0F7FA),
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            "Matching Game",
+            style: TextStyle(
+                fontSize: 30
             ),
-            automaticallyImplyLeading: false,
           ),
-          body: ListView.builder(
-            itemCount: studentNames.length,
-            itemBuilder: (context, index) {
-              String name = studentNames[index];
-              return Container(
-                height: 100,
-                child: ListTile(
-                  leading: GestureDetector(
+          automaticallyImplyLeading: false,
+        ),
+        body: ListView.builder(
+          itemCount: studentNames.length,
+          itemBuilder: (context, index) {
+            String name = studentNames[index];
+            return Container(
+              height: 100,
+              child: ListTile(
+                leading: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      currentSelectedAvatar = studentPhotoURLS[index];
+                      if(avatarColorList[index] == Colors.white)
+                      {
+                        for(int i=0; i<avatarColorList.length; i++)
+                        {
+                          avatarColorList[i] = Colors.white;
+                        }
+                        avatarColorList[index] = Colors.green;
+                        avatarSelected = true;
+                      }
+                      else{
+                        avatarColorList[index] = Colors.white;
+                        avatarSelected = false;
+                      }
+                      //check if there is a selection on both sides
+                      if(avatarSelected && textSelected)
+                      {
+                        selectionValidation();
+                      }
+                    });
+                  },
+                  child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: avatarColorList[index],
+                      child: CircleAvatar(
+                        radius: 25,
+                        backgroundImage: NetworkImage(studentPhotoURLS[index]),
+                      )
+                  ),
+                ),
+                trailing: GestureDetector(
                     onTap: () {
                       setState(() {
-                        currentSelectedAvatar = studentPhotoURLS[index];
-                        if(avatarColorList[index] == Colors.white)
+                        currentSelectedName = studentNames[index];
+                        if(textColorList[index] == Colors.black)
                         {
-                          for(int i=0; i<avatarColorList.length; i++)
+                          for(int i=0; i<textColorList.length; i++)
                           {
-                            avatarColorList[i] = Colors.white;
+                            textColorList[i] = Colors.black;
                           }
-                          avatarColorList[index] = Colors.green;
-                          avatarSelected = true;
+                          textColorList[index] = Colors.green;
+                          textSelected = true;
                         }
                         else{
-                          avatarColorList[index] = Colors.white;
-                          avatarSelected = false;
+                          textColorList[index] = Colors.black;
+                          textSelected = false;
                         }
                         //check if there is a selection on both sides
                         if(avatarSelected && textSelected)
@@ -1855,53 +1915,20 @@ class matchingGameState extends State<matchingGame> {
                         }
                       });
                     },
-                    child: CircleAvatar(
-                        radius: 50,
-                        backgroundColor: avatarColorList[index],
-                        child: CircleAvatar(
-                          radius: 25,
-                          backgroundImage: NetworkImage(studentPhotoURLS[index]),
-                        )
-                    ),
-                  ),
-                  trailing: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          currentSelectedName = studentNames[index];
-                          if(textColorList[index] == Colors.black)
-                          {
-                            for(int i=0; i<textColorList.length; i++)
-                            {
-                              textColorList[i] = Colors.black;
-                            }
-                            textColorList[index] = Colors.green;
-                            textSelected = true;
-                          }
-                          else{
-                            textColorList[index] = Colors.black;
-                            textSelected = false;
-                          }
-                          //check if there is a selection on both sides
-                          if(avatarSelected && textSelected)
-                          {
-                            selectionValidation();
-                          }
-                        });
-                      },
-                      child: Text(
-                        name.substring(0, name.length-7),
-                        style: TextStyle(
-                          color: textColorList[index],
-                          fontSize: 20,
-                        ),
-                      )
-                  ),
+                    child: Text(
+                      name.substring(0, name.length-7),
+                      style: TextStyle(
+                        color: textColorList[index],
+                        fontSize: 20,
+                      ),
+                    )
                 ),
-              );
-            },
-          ),
-        );
-      } else {
+              ),
+            );
+          },
+        ),
+      );
+    } else {
       return CircularProgressIndicator(
         backgroundColor: Color(0xFFE0F7FA),
       );
@@ -1918,16 +1945,16 @@ class matchingGameState extends State<matchingGame> {
       from their respective lists
      */
     if(widget.classUserData[currentSelectedName] == currentSelectedAvatar)
-      {
-        print("Correct Match");
-        studentNames.remove(currentSelectedName);
-        studentPhotoURLS.remove(currentSelectedAvatar);
-        correctGuess += 1;
-      }
+    {
+      print("Correct Match");
+      studentNames.remove(currentSelectedName);
+      studentPhotoURLS.remove(currentSelectedAvatar);
+      correctGuess += 1;
+    }
     else
-      {
-       print("Incorrect Match");
-      }
+    {
+      print("Incorrect Match");
+    }
 
     //reset the colors for both lists
     for(int i=0; i<textColorList.length; i++)
@@ -1942,10 +1969,10 @@ class matchingGameState extends State<matchingGame> {
     accuracy = (correctGuess / totalGuess).toString();
     //check if there are any more game values left, if not update game stats and return
     if(studentNames.length <= 0)
-      {
-        updateGameStats();
-        Navigator.pop(context);
-      }
+    {
+      updateGameStats();
+      Navigator.pop(context);
+    }
   }
 
   Future<void> updateGameStats() {
