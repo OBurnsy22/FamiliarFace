@@ -182,6 +182,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<QueryDocumentSnapshot> allClasses = [];
+  bool classesRetrieved = false;
 
   //handles dynamic links
   void initDynamicLinks() async {
@@ -203,14 +205,29 @@ class _MyHomePageState extends State<MyHomePage> {
     final Uri deepLink = data?.link;
   }
 
+  Future<void> retrieveClasses() async{
+    QuerySnapshot snap = await FirebaseFirestore.instance.collection(globals.user.email).get();
+    //loops through all documents, appending their names to the myDocs list
+    snap.docs.forEach((element) {
+      allClasses.add(element);
+    });
+    print(allClasses.length);
+    setState(() {
+      classesRetrieved = true;
+    });
+  }
+
   @override
   void initState() {
     initDynamicLinks();
+    retrieveClasses();
     super.initState();
   }
 
   @override     // This method is rerun every time setState is called, for instance as done
   Widget build(BuildContext context) {
+    if(classesRetrieved)
+      {
         return Scaffold(
           backgroundColor: Color(0xFFE0F7FA),
           appBar: AppBar(
@@ -242,7 +259,6 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Container(
-                  margin: EdgeInsets.only(bottom: 65.0),
                   child: Icon(
                     Icons.face_retouching_natural,
                     size: 200,
@@ -251,7 +267,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 Container(
                   width: 250.0,
                   height: 50.0,
-                  margin: EdgeInsets.only(bottom: 10.0),
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         onPrimary: Color(0xFFE0F7FA),
@@ -273,35 +288,35 @@ class _MyHomePageState extends State<MyHomePage> {
                       )
                   ),
                 ),
-                Container(
-                  width: 250.0,
-                  height: 50.0,
-                  margin: EdgeInsets.only(top: 10.0, bottom: 100),
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        onPrimary: Color(0xFFE0F7FA),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32.0),
+                Expanded(
+                  child: ListView.builder(
+                    //shrinkWrap: true,
+                    itemCount: allClasses.length,
+                    itemBuilder: (context, index) {
+                      var name = allClasses[index];
+                      return Card(
+                        child:ListTile(
+                            title: Text(name.id.substring(0, name.id.length-7)),
+                            onTap:() {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => classView(class_ : allClasses[index])),
+                              );
+                            }
                         ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MyClasses()),
-                        );
-                      },
-                      child: Text(
-                        "My Classes",
-                        style: TextStyle(
-                          fontSize: 22,
-                        ),
-                      )
+                      );
+                    },
                   ),
                 ),
               ],
             ),
           ),
         );
+      } else { //classes havn't been retrieved yet
+      return CircularProgressIndicator(
+        backgroundColor: Color(0xFFE0F7FA),
+      );
+    }
   }
 
 
@@ -962,78 +977,6 @@ class _CreateClassState extends State<CreateClass> {
   }
 }
 /* CLASSES FOR CREATE A CLASS END */
-
-
-/* CLASSES FOR MY CLASSES START */
-class MyClasses extends StatefulWidget {
-  @override
-  _MyClassesState createState() => _MyClassesState();
-}
-
-class _MyClassesState extends State<MyClasses> {
-  var myDocs = [];
-  List<QueryDocumentSnapshot> allClasses = [];
-  bool classesRetrieved = false;
-
-  @override
-  Widget build(BuildContext context) {
-    if(classesRetrieved) {
-      return Scaffold(
-        backgroundColor: Color(0xFFE0F7FA),
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(
-            'My Classes',
-            style: TextStyle(
-                fontSize: 30
-            ),
-          ),
-        ),
-        body: ListView.builder(
-          itemCount: allClasses.length,
-          itemBuilder: (context, index) {
-            var name = allClasses[index];
-            return Card(
-              child:ListTile(
-                  title: Text(name.id.substring(0, name.id.length-7)),
-                  onTap:() {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => classView(class_ : allClasses[index])),
-                    );
-                  }
-              ),
-            );
-          },
-        ),
-      );
-    } else {
-      return CircularProgressIndicator(
-        backgroundColor: Color(0xFFE0F7FA),
-      );
-    }
-  }
-
-  @override
-  void initState() {
-    retrieveClasses();
-    super.initState();
-  }
-
-  Future<void> retrieveClasses() async{ //possible hint for responsive lists: https://stackoverflow.com/questions/51415556/flutter-listview-item-click-listener/52771937
-    QuerySnapshot snap = await FirebaseFirestore.instance.collection(globals.user.email).get();
-    //loops through all documents, appending their names to the myDocs list
-    snap.docs.forEach((element) {
-      allClasses.add(element);
-    });
-    print(allClasses.length);
-    setState(() {
-      classesRetrieved = true;
-    });
-  }
-}
-/* CLASSES FOR MY CLASSES END */
-
 
 
 
