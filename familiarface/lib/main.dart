@@ -106,6 +106,10 @@ class loginState extends State<login> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(32.0),
                         ),
+                        side: BorderSide(
+                          width: 3,
+                          color: Colors.cyan.shade800,
+                        ),
                       ),
                       onPressed: () {
                         singInErrorCatcher();
@@ -261,7 +265,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Container(
                   child: Icon(
                     Icons.face_retouching_natural,
-                    size: 200,
+                    size: 230,
                   ),
                 ),
                 Container(
@@ -272,6 +276,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         onPrimary: Color(0xFFE0F7FA),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(32.0),
+                        ),
+                        side: BorderSide(
+                          width: 3,
+                          color: Colors.cyan.shade800,
                         ),
                       ),
                       onPressed: () {
@@ -289,6 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Container(
+                  margin: EdgeInsets.only(top: 10, bottom: 10),
                   child: Text(
                     "My Classes",
                     style: TextStyle(
@@ -300,14 +309,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                          color: Colors.blueGrey.shade200,
+                          color: Colors.cyan.shade800,
                           width: 3,
                       ),
                       borderRadius: BorderRadius.all(Radius.circular(5)),
                       color: Colors.cyan,
                     ),
                     child: SizedBox(
-
                       width: 270.0,
                       child: ListView.builder(
                         //shrinkWrap: true,
@@ -581,6 +589,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(32.0),
                       ),
+                      side: BorderSide(
+                        width: 3,
+                        color: Colors.cyan.shade800,
+                      ),
                     ),
                     onPressed: () {
                       imageSelectOptions();
@@ -602,6 +614,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       onPrimary: Color(0xFFE0F7FA),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(32.0),
+                      ),
+                      side: BorderSide(
+                        width: 3,
+                        color: Colors.cyan.shade800,
                       ),
                     ),
                     onPressed: () {
@@ -670,6 +686,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(32.0),
                   ),
+                  side: BorderSide(
+                    width: 3,
+                    color: Colors.cyan.shade800,
+                  ),
                 ),
                 onPressed: () async {
                   getImageGallery();
@@ -681,6 +701,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   onPrimary: Color(0xFFE0F7FA),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(32.0),
+                  ),
+                  side: BorderSide(
+                    width: 3,
+                    color: Colors.cyan.shade800,
                   ),
                 ),
                 onPressed: () async {
@@ -872,6 +896,10 @@ class _CreateClassState extends State<CreateClass> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(32.0),
               ),
+              side: BorderSide(
+                width: 3,
+                color: Colors.cyan.shade800,
+              ),
             ),
             key: Key("submit_key"),
             onPressed: validateForm,
@@ -949,6 +977,10 @@ class _CreateClassState extends State<CreateClass> {
                   onPrimary: Color(0xFFE0F7FA),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(32.0),
+                  ),
+                  side: BorderSide(
+                    width: 3,
+                    color: Colors.cyan.shade800,
                   ),
                 ),
                 onPressed: () async {
@@ -1067,6 +1099,10 @@ class _classViewState extends State<classView> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32.0),
                           ),
+                          side: BorderSide(
+                            width: 3,
+                            color: Colors.cyan.shade800,
+                          ),
                         ),
                         onPressed: () {
                           Navigator.push(
@@ -1092,6 +1128,10 @@ class _classViewState extends State<classView> {
                           onPrimary: Color(0xFFE0F7FA),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32.0),
+                          ),
+                          side: BorderSide(
+                            width: 3,
+                            color: Colors.cyan.shade800,
                           ),
                         ),
                         onPressed: () {
@@ -1119,6 +1159,10 @@ class _classViewState extends State<classView> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32.0),
                           ),
+                          side: BorderSide(
+                            width: 3,
+                            color: Colors.cyan.shade800,
+                          ),
                         ),
                         onPressed: () {
                           Navigator.push(
@@ -1145,6 +1189,10 @@ class _classViewState extends State<classView> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32.0),
                           ),
+                          side: BorderSide(
+                            width: 3,
+                            color: Colors.cyan.shade800,
+                          ),
                         ),
                         onPressed: () async {
                           var dynamicLink = await generateDynamicLink(
@@ -1170,6 +1218,10 @@ class _classViewState extends State<classView> {
                           onPrimary: Color(0xFFE0F7FA),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32.0),
+                          ),
+                          side: BorderSide(
+                            width: 3,
+                            color: Colors.cyan.shade800,
                           ),
                         ),
                         onPressed: () {
@@ -1213,6 +1265,10 @@ class _classViewState extends State<classView> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32.0),
                           ),
+                          side: BorderSide(
+                            width: 3,
+                            color: Colors.cyan.shade800,
+                          ),
                         ),
                         onPressed: () {
                           Navigator.push(
@@ -1238,6 +1294,10 @@ class _classViewState extends State<classView> {
                           onPrimary: Color(0xFFE0F7FA),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32.0),
+                          ),
+                          side: BorderSide(
+                            width: 3,
+                            color: Colors.cyan.shade800,
                           ),
                         ),
                         onPressed: () {
@@ -1265,6 +1325,10 @@ class _classViewState extends State<classView> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32.0),
                           ),
+                          side: BorderSide(
+                            width: 3,
+                            color: Colors.cyan.shade800,
+                          ),
                         ),
                         onPressed: () {
                           Navigator.push(
@@ -1290,6 +1354,10 @@ class _classViewState extends State<classView> {
                           onPrimary: Color(0xFFE0F7FA),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32.0),
+                          ),
+                          side: BorderSide(
+                            width: 3,
+                            color: Colors.cyan.shade800,
                           ),
                         ),
                         onPressed: () {
