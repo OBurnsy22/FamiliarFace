@@ -288,25 +288,47 @@ class _MyHomePageState extends State<MyHomePage> {
                       )
                   ),
                 ),
+                Container(
+                  child: Text(
+                    "My Classes",
+                    style: TextStyle(
+                      fontSize: 22,
+                    ),
+                  )
+                ),
                 Expanded(
-                  child: ListView.builder(
-                    //shrinkWrap: true,
-                    itemCount: allClasses.length,
-                    itemBuilder: (context, index) {
-                      var name = allClasses[index];
-                      return Card(
-                        child:ListTile(
-                            title: Text(name.id.substring(0, name.id.length-7)),
-                            onTap:() {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => classView(class_ : allClasses[index])),
-                              );
-                            }
-                        ),
-                      );
-                    },
-                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Colors.blueGrey.shade200,
+                          width: 3,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      color: Colors.cyan,
+                    ),
+                    child: SizedBox(
+
+                      width: 270.0,
+                      child: ListView.builder(
+                        //shrinkWrap: true,
+                        itemCount: allClasses.length,
+                        itemBuilder: (context, index) {
+                          var name = allClasses[index];
+                          return Card(
+                            child:ListTile(
+                                title: Text(name.id.substring(0, name.id.length-7)),
+                                onTap:() {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => classView(class_ : allClasses[index])),
+                                  );
+                                }
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  )
                 ),
               ],
             ),
