@@ -103,8 +103,15 @@ class _MyHomePageState extends State<MyHomePage> {
     if(_initialized) { //If firebase is initialized
       if (globals.signedIn && globals.user != null) { //IF USER IS SIGNED IN
         return Scaffold(
+          backgroundColor: Color(0xFFE0F7FA),
           appBar: AppBar(
-            title: Text(widget.title),
+            centerTitle: true,
+            title: Text(
+                widget.title,
+                style: TextStyle(
+                  fontSize: 30
+                ),
+            ),
             actions: <Widget>[
               IconButton(
                 icon: Icon(
@@ -124,23 +131,50 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => CreateClass()),
-                      );
-                    },
-                    child: Text("Create A Class")
+                Container(
+                  margin: EdgeInsets.only(bottom: 65.0),
+                  child: Icon(
+                    Icons.face_retouching_natural,
+                    size: 200,
+                  ),
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyClasses()),
-                      );
-                    },
-                    child: Text("My Classes")
+                Container(
+                    width: 250.0,
+                    height: 50.0,
+                    margin: EdgeInsets.only(bottom: 10.0),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => CreateClass()),
+                          );
+                        },
+                        child: Text(
+                            "Create A Class",
+                            style: TextStyle(
+                              fontSize: 22,
+                            ),
+                        )
+                    ),
+                ),
+                Container(
+                  width: 250.0,
+                  height: 50.0,
+                  margin: EdgeInsets.only(top: 10.0, bottom: 100),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyClasses()),
+                        );
+                      },
+                      child: Text(
+                          "My Classes",
+                          style: TextStyle(
+                            fontSize: 22,
+                          ),
+                      )
+                  ),
                 ),
               ],
             ),
@@ -148,10 +182,18 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       } else { //IF USER IS NOT SIGNED IN
         return Scaffold(
+          backgroundColor: Color(0xFFE0F7FA),
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Icon(
+                  Icons.face_retouching_natural,
+                  size: 130,
+                ),
+                Text(
+                    "Welcome to FamiliarFace, please sign in"
+                ),
                 ElevatedButton(
                     onPressed: () {
                       singInErrorCatcher();
@@ -164,7 +206,9 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       }
     } else { //If firebase is not initialized
-      return CircularProgressIndicator();
+      return CircularProgressIndicator(
+        backgroundColor: Color(0xFFE0F7FA),
+      );
     }
   }
 
@@ -412,8 +456,15 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     if(picReceived) {
       return Scaffold(
+        backgroundColor: Color(0xFFE0F7FA),
         appBar: AppBar(
-          title: Text('Settings'),
+          centerTitle: true,
+          title: Text(
+              'Settings',
+               style: TextStyle(
+                  fontSize: 30
+            ),
+          ),
         ),
         body: Center(
           child: Column(
@@ -439,7 +490,9 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       );
     } else {
-      return CircularProgressIndicator();
+      return CircularProgressIndicator(
+        backgroundColor: Color(0xFFE0F7FA),
+      );
     }
   }
 
@@ -574,8 +627,15 @@ class _CreateClassState extends State<CreateClass> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFE0F7FA),
       appBar: AppBar(
-        title: Text('Create A Class'),
+        centerTitle: true,
+        title: Text(
+            'Create A Class',
+             style: TextStyle(
+                fontSize: 30
+          ),
+        ),
       ),
       body: Center(
           child: Column(
@@ -791,8 +851,15 @@ class _MyClassesState extends State<MyClasses> {
   Widget build(BuildContext context) {
     if(classesRetrieved) {
       return Scaffold(
+        backgroundColor: Color(0xFFE0F7FA),
         appBar: AppBar(
-          title: Text('My Classes'),
+          centerTitle: true,
+          title: Text(
+              'My Classes',
+               style: TextStyle(
+                  fontSize: 30
+            ),
+          ),
         ),
         body: ListView.builder(
           itemCount: allClasses.length,
@@ -811,7 +878,9 @@ class _MyClassesState extends State<MyClasses> {
         ),
       );
     } else {
-      return CircularProgressIndicator();
+      return CircularProgressIndicator(
+        backgroundColor: Color(0xFFE0F7FA),
+      );
     }
   }
 
@@ -882,9 +951,15 @@ class _classViewState extends State<classView> {
     if(varsInitialized) {
       if(classData["isTeacher"] == true){
         return Scaffold(
+          backgroundColor: Color(0xFFE0F7FA),
           appBar: AppBar(
+            centerTitle: true,
             title: Text(
-                widget.class_.id.substring(0, widget.class_.id.length - 7)),
+                widget.class_.id.substring(0, widget.class_.id.length - 7),
+                style: TextStyle(
+                    fontSize: 30
+                ),
+            ),
           ),
           body: Center(
             child: Column(
@@ -942,9 +1017,15 @@ class _classViewState extends State<classView> {
         );
       } else{ //user is not the owner of this class
         return Scaffold(
+          backgroundColor: Color(0xFFE0F7FA),
           appBar: AppBar(
+            centerTitle: true,
             title: Text(
-                widget.class_.id.substring(0, widget.class_.id.length - 7)),
+                widget.class_.id.substring(0, widget.class_.id.length - 7),
+                style: TextStyle(
+                    fontSize: 30
+                ),
+            ),
           ),
           body: Center(
             child: Column(
@@ -992,7 +1073,9 @@ class _classViewState extends State<classView> {
         );
       }
     } else {
-      return CircularProgressIndicator();
+      return CircularProgressIndicator(
+        backgroundColor: Color(0xFFE0F7FA),
+      );
     }
   }
 
@@ -1183,14 +1266,14 @@ class scoreboardState extends State<scoreboard> {
       accuracy = classDoc["accuracy"].toString(),
       print(accuracy),
       //case 1 and 2, the size is 3, so its either 1.0 or 0.'num'
-      if(accuracy.length == 3)
+      if(accuracy.length <= 3)
         {
           if(accuracy[0] == "1")
             {
               print("in case 1"),
               accuracy == "100"
             }
-          else
+          else if(accuracy.length != 1)
             {
               print("in case 2"),
               accuracy = accuracy.substring(2),
@@ -1223,8 +1306,15 @@ class scoreboardState extends State<scoreboard> {
     if(initialized)
       {
         return Scaffold(
+            backgroundColor: Color(0xFFE0F7FA),
             appBar: AppBar(
-              title: Text("Scoreboard"),
+              centerTitle: true,
+              title: Text(
+                  "Scoreboard",
+                  style: TextStyle(
+                      fontSize: 30
+                ),
+              ),
             ),
             body: ListView(
               children: [
@@ -1244,7 +1334,9 @@ class scoreboardState extends State<scoreboard> {
             )
         );
       } else {
-      return CircularProgressIndicator();
+      return CircularProgressIndicator(
+        backgroundColor: Color(0xFFE0F7FA),
+      );
     }
   }
 }
@@ -1345,8 +1437,15 @@ class rosterState extends State<roster> {
   @override
   Widget build(BuildContext context){
     return Scaffold(
+      backgroundColor: Color(0xFFE0F7FA),
       appBar: AppBar(
-        title: Text("Roster"),
+        centerTitle: true,
+        title: Text(
+            "Roster",
+            style: TextStyle(
+                fontSize: 30
+            ),
+        ),
       ),
       body: ListView.builder(
         itemCount: widget.classUserData.length,
@@ -1436,8 +1535,15 @@ class matchingGameState extends State<matchingGame> {
     if(initialized)
       {
         return Scaffold(
+          backgroundColor: Color(0xFFE0F7FA),
           appBar: AppBar(
-            title: Text("Matching Game"),
+            centerTitle: true,
+            title: Text(
+                "Matching Game",
+                style: TextStyle(
+                    fontSize: 30
+                ),
+            ),
             automaticallyImplyLeading: false,
           ),
           body: ListView.builder(
@@ -1514,7 +1620,9 @@ class matchingGameState extends State<matchingGame> {
           ),
         );
       } else {
-      return CircularProgressIndicator();
+      return CircularProgressIndicator(
+        backgroundColor: Color(0xFFE0F7FA),
+      );
     }
   }
 
