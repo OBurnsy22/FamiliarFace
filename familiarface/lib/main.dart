@@ -988,7 +988,7 @@ class _CreateClassState extends State<CreateClass> {
                   print(dynamicLink);
                   Clipboard.setData(new ClipboardData(text: dynamicLink.toString()));
                 },
-                child: Text("Generate And Copy To Clipboard ")
+                child: Text("Copy Link To Clipboard")
             ),
             Divider(),
             TextButton(
@@ -1202,7 +1202,7 @@ class _classViewState extends State<classView> {
                               new ClipboardData(text: dynamicLink.toString()));
                         },
                         child: Text(
-                          "Generate and Copy Link",
+                          "Copy Link To Clipboard",
                           style: TextStyle(
                             fontSize: 20,
                           ),
@@ -1784,15 +1784,23 @@ class rosterState extends State<roster> {
         itemBuilder: (context, index) {
           String name = studentNames[index];
           String URL = studentPhotoURLS[index];
-          return Container(
-            height: 100,
+          return SizedBox(
+            height: 115,
             child: Card(
               child: ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(URL),
-                  radius: 50,
+                title: Align(
+                  alignment: Alignment.centerLeft,
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(URL),
+                    radius: 45,
+                  ),
                 ),
-                title: Text(name.substring(0, name.length-7)),
+                trailing: Text(
+                    name.substring(0, name.length-7),
+                    style: TextStyle(
+                      fontSize: 20,
+                  ),
+                ),
               ),
             ),
           );
