@@ -1104,51 +1104,91 @@ class _classViewState extends State<classView> {
           appBar: AppBar(
             centerTitle: true,
             title: Text(
-                widget.class_.id.substring(0, widget.class_.id.length - 7),
-                style: TextStyle(
-                    fontSize: 30
-                ),
+              widget.class_.id.substring(0, widget.class_.id.length - 7),
+              style: TextStyle(
+                  fontSize: 30
+              ),
             ),
           ),
           body: Center(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) =>
-                              matchingGame(classUserData: studentInfo, className: widget.class_.id)),
-                        );
-                      },
-                      child: Text("Play Game")
+                  Container(
+                    width: 250.0,
+                    height: 50.0,
+                    margin: EdgeInsets.only(bottom: 10.0),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>
+                                matchingGame(classUserData: studentInfo, className: widget.class_.id)),
+                          );
+                        },
+                        child: Text(
+                          "Play Game",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        )
+                    ),
                   ),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) =>
-                              roster(classUserData: studentInfo)),
-                        );
-                      },
-                      child: Text("View Roster")
+                  Container(
+                    width: 250.0,
+                    height: 50.0,
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>
+                                roster(classUserData: studentInfo)),
+                          );
+                        },
+                        child: Text(
+                          "View Roster",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        )
+                    ),
                   ),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) =>
-                              scoreboard(className: widget.class_.id)),
-                        );
-                      },
-                      child: Text("View Scoreboard")
+                  Container(
+                    width: 250.0,
+                    height: 50.0,
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>
+                                scoreboard(className: widget.class_.id)),
+                          );
+                        },
+                        child: Text(
+                          "View Scoreboard",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        )
+                    ),
                   ),
-                  ElevatedButton(
-                      onPressed: () {
-                        leaveClassWarning(context);
-                      },
-                      child: Text("Leave Class")
+                  Container(
+                    width: 250.0,
+                    height: 50.0,
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          leaveClassWarning(context);
+                        },
+                        child: Text(
+                          "Leave Class",
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        )
+                    ),
                   ),
                 ]
             ),
@@ -1401,17 +1441,45 @@ class scoreboardState extends State<scoreboard> {
             ),
             body: ListView(
               children: [
-                ListTile(
-                  title: Text("Games Played: $gamesPlayed"),
+                Card(
+                  child: ListTile(
+                    title: Text(
+                        "Games Played: $gamesPlayed",
+                         style: TextStyle(
+                         fontSize: 20,
+                      ),
+                    ),
+                  ),
                 ),
-                ListTile(
-                  title: Text("Accuracy: $accuracy%"),
+                Card(
+                  child: ListTile(
+                    title: Text(
+                        "Accuracy: $accuracy%",
+                        style: TextStyle(
+                          fontSize: 20,
+                      ),
+                    ),
+                  ),
                 ),
-                ListTile(
-                  title: Text("Correct Guesses: $correctGuess"),
+                Card(
+                  child: ListTile(
+                    title: Text(
+                        "Correct Guesses: $correctGuess",
+                        style: TextStyle(
+                          fontSize: 20,
+                      ),
+                    ),
+                  ),
                 ),
-                ListTile(
-                  title: Text("Total Guesses: $totalGuess"),
+                Card(
+                  child: ListTile(
+                    title: Text(
+                        "Total Guesses: $totalGuess",
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                    ),
+                  ),
                 ),
               ],
             )
@@ -1535,11 +1603,17 @@ class rosterState extends State<roster> {
         itemBuilder: (context, index) {
             String name = studentNames[index];
             String URL = studentPhotoURLS[index];
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage(URL),
-              ),
-              title: Text(name.substring(0, name.length-7)),
+            return Container(
+              height: 100,
+               child: Card(
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(URL),
+                      radius: 50,
+                    ),
+                    title: Text(name.substring(0, name.length-7)),
+                  ),
+                ),
             );
         },
       ),
@@ -1633,56 +1707,25 @@ class matchingGameState extends State<matchingGame> {
             itemCount: studentNames.length,
             itemBuilder: (context, index) {
               String name = studentNames[index];
-              return ListTile(
-                leading: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      currentSelectedAvatar = studentPhotoURLS[index];
-                      if(avatarColorList[index] == Colors.white)
-                      {
-                        for(int i=0; i<avatarColorList.length; i++)
-                        {
-                          avatarColorList[i] = Colors.white;
-                        }
-                        avatarColorList[index] = Colors.green;
-                        avatarSelected = true;
-                      }
-                      else{
-                        avatarColorList[index] = Colors.white;
-                        avatarSelected = false;
-                      }
-                      //check if there is a selection on both sides
-                      if(avatarSelected && textSelected)
-                      {
-                        selectionValidation();
-                      }
-                    });
-                  },
-                  child: CircleAvatar(
-                      radius: 60,
-                      backgroundColor: avatarColorList[index],
-                      child: CircleAvatar(
-                        radius: 25,
-                        backgroundImage: NetworkImage(studentPhotoURLS[index]),
-                      )
-                  ),
-                ),
-                trailing: GestureDetector(
+              return Container(
+                height: 100,
+                child: ListTile(
+                  leading: GestureDetector(
                     onTap: () {
                       setState(() {
-                        currentSelectedName = studentNames[index];
-                        if(textColorList[index] == Colors.black)
+                        currentSelectedAvatar = studentPhotoURLS[index];
+                        if(avatarColorList[index] == Colors.white)
                         {
-                          for(int i=0; i<textColorList.length; i++)
+                          for(int i=0; i<avatarColorList.length; i++)
                           {
-                            textColorList[i] = Colors.black;
+                            avatarColorList[i] = Colors.white;
                           }
-                          textColorList[index] = Colors.green;
-                          textSelected = true;
+                          avatarColorList[index] = Colors.green;
+                          avatarSelected = true;
                         }
                         else{
-                          textColorList[index] = Colors.black;
-                          textSelected = false;
+                          avatarColorList[index] = Colors.white;
+                          avatarSelected = false;
                         }
                         //check if there is a selection on both sides
                         if(avatarSelected && textSelected)
@@ -1691,12 +1734,47 @@ class matchingGameState extends State<matchingGame> {
                         }
                       });
                     },
-                    child: Text(
-                      name.substring(0, name.length-7),
-                      style: TextStyle(
+                    child: CircleAvatar(
+                        radius: 50,
+                        backgroundColor: avatarColorList[index],
+                        child: CircleAvatar(
+                          radius: 25,
+                          backgroundImage: NetworkImage(studentPhotoURLS[index]),
+                        )
+                    ),
+                  ),
+                  trailing: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          currentSelectedName = studentNames[index];
+                          if(textColorList[index] == Colors.black)
+                          {
+                            for(int i=0; i<textColorList.length; i++)
+                            {
+                              textColorList[i] = Colors.black;
+                            }
+                            textColorList[index] = Colors.green;
+                            textSelected = true;
+                          }
+                          else{
+                            textColorList[index] = Colors.black;
+                            textSelected = false;
+                          }
+                          //check if there is a selection on both sides
+                          if(avatarSelected && textSelected)
+                          {
+                            selectionValidation();
+                          }
+                        });
+                      },
+                      child: Text(
+                        name.substring(0, name.length-7),
+                        style: TextStyle(
                           color: textColorList[index],
-                      ),
-                    )
+                          fontSize: 20,
+                        ),
+                      )
+                  ),
                 ),
               );
             },
