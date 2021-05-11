@@ -117,6 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: Icon(
                   Icons.settings,
                   color: Colors.white,
+                  size: 40,
                 ),
                 onPressed: () {
                   Navigator.push(
@@ -470,20 +471,44 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              CircleAvatar(
-                backgroundImage: NetworkImage(userImage),
+              Container(
+                margin: EdgeInsets.only(bottom: 65),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(userImage),
+                  radius: 70,
+                ),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    imageSelectOptions();
-                  },
-                  child: Text("Upload Profile Picture")
+              Container(
+                width: 250.0,
+                height: 50.0,
+                margin: EdgeInsets.only(bottom: 10.0),
+                child: ElevatedButton(
+                    onPressed: () {
+                      imageSelectOptions();
+                    },
+                    child: Text(
+                        "Upload Profile Picture",
+                        style: TextStyle(
+                          fontSize: 22,
+                        )
+                    )
+                ),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    googleSignOut();
-                  },
-                  child: Text("Logout")
+              Container(
+                width: 250.0,
+                height: 50.0,
+                margin: EdgeInsets.only(top: 10.0, bottom: 100),
+                child: ElevatedButton(
+                    onPressed: () {
+                      googleSignOut();
+                    },
+                    child: Text(
+                        "Logout",
+                        style: TextStyle(
+                          fontSize: 22,
+                        )
+                    )
+                ),
               ),
             ],
           ),
@@ -719,11 +744,20 @@ class _CreateClassState extends State<CreateClass> {
   //buttons for AddClassForm
   List<Widget> buttons() {
     return [
-      ElevatedButton(
-        key: Key("submit_key"),
-        onPressed: validateForm,
-        child: Text("Create Class"),
-      )
+      Container(
+        width: 250.0,
+        height: 50.0,
+        child: ElevatedButton(
+          key: Key("submit_key"),
+          onPressed: validateForm,
+          child: Text(
+            "Create Class",
+            style: TextStyle(
+              fontSize: 22,
+            ),
+          ),
+        )
+      ),
     ];
   }
 
@@ -865,14 +899,16 @@ class _MyClassesState extends State<MyClasses> {
           itemCount: allClasses.length,
           itemBuilder: (context, index) {
             var name = allClasses[index];
-            return ListTile(
-              title: Text(name.id.substring(0, name.id.length-7)),
-              onTap:() {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => classView(class_ : allClasses[index])),
-                );
-              }
+            return Card(
+              child:ListTile(
+                title: Text(name.id.substring(0, name.id.length-7)),
+                onTap:() {
+                  Navigator.push(
+                   context,
+                    MaterialPageRoute(builder: (context) => classView(class_ : allClasses[index])),
+                   );
+                 }
+              ),
             );
           },
         ),
@@ -900,9 +936,6 @@ class _MyClassesState extends State<MyClasses> {
     setState(() {
       classesRetrieved = true;
     });
-    /*print(allClasses[0].data());
-    Map<String, dynamic> myData = allClasses[0].data();
-    print(myData["accuracy"]); */
   }
 }
 /* CLASSES FOR MY CLASSES END */
@@ -965,51 +998,101 @@ class _classViewState extends State<classView> {
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) =>
-                              matchingGame(classUserData: studentInfo, className: widget.class_.id)),
-                        );
-                      },
-                      child: Text("Play Game")
+                  Container(
+                    width: 250.0,
+                    height: 50.0,
+                    margin: EdgeInsets.only(bottom: 10.0),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>
+                                matchingGame(classUserData: studentInfo, className: widget.class_.id)),
+                          );
+                        },
+                        child: Text(
+                            "Play Game",
+                            style: TextStyle(
+                              fontSize: 20,
+                           ),
+                        )
+                    ),
                   ),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) =>
-                              roster(classUserData: studentInfo)),
-                        );
-                      },
-                      child: Text("View Roster")
+                  Container(
+                      width: 250.0,
+                      height: 50.0,
+                      margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) =>
+                                  roster(classUserData: studentInfo)),
+                            );
+                          },
+                          child: Text(
+                              "View Roster",
+                              style: TextStyle(
+                                fontSize: 20,
+                            ),
+                          )
+                      ),
                   ),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) =>
-                              scoreboard(className: widget.class_.id)),
-                        );
-                      },
-                      child: Text("View Scoreboard")
+                  Container(
+                      width: 250.0,
+                      height: 50.0,
+                      margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) =>
+                                  scoreboard(className: widget.class_.id)),
+                            );
+                          },
+                          child: Text(
+                              "View Scoreboard",
+                              style: TextStyle(
+                                fontSize: 20,
+                             ),
+                          )
+                      ),
                   ),
-                  ElevatedButton(
-                      onPressed: () async {
-                        var dynamicLink = await generateDynamicLink(
-                            widget.class_.id);
-                        print(dynamicLink);
-                        Clipboard.setData(
-                            new ClipboardData(text: dynamicLink.toString()));
-                      },
-                      child: Text("Generate and Copy Link")
+                  Container(
+                      width: 250.0,
+                      height: 50.0,
+                      margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            var dynamicLink = await generateDynamicLink(
+                                widget.class_.id);
+                            print(dynamicLink);
+                            Clipboard.setData(
+                                new ClipboardData(text: dynamicLink.toString()));
+                          },
+                          child: Text(
+                              "Generate and Copy Link",
+                               style: TextStyle(
+                                 fontSize: 20,
+                              ),
+                          )
+                      ),
                   ),
-                  ElevatedButton(
-                      onPressed: () {
-                        deleteClassWarning(context);
-                      },
-                      child: Text("Delete Class")
+                  Container(
+                      width: 250.0,
+                      height: 50.0,
+                      margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                      child: ElevatedButton(
+                          onPressed: () {
+                            deleteClassWarning(context);
+                          },
+                          child: Text(
+                              "Delete Class",
+                              style: TextStyle(
+                                fontSize: 20,
+                               ),
+                          )
+                      ),
                   ),
                 ]
             ),
@@ -1576,7 +1659,7 @@ class matchingGameState extends State<matchingGame> {
                     });
                   },
                   child: CircleAvatar(
-                      radius: 30,
+                      radius: 60,
                       backgroundColor: avatarColorList[index],
                       child: CircleAvatar(
                         radius: 25,
@@ -1611,7 +1694,7 @@ class matchingGameState extends State<matchingGame> {
                     child: Text(
                       name.substring(0, name.length-7),
                       style: TextStyle(
-                          color: textColorList[index]
+                          color: textColorList[index],
                       ),
                     )
                 ),
