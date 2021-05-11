@@ -8,7 +8,6 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:image_picker/image_picker.dart';
-import 'package:overlay/overlay.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'my_globals.dart' as globals;
 
@@ -144,6 +143,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 50.0,
                     margin: EdgeInsets.only(bottom: 10.0),
                     child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Color(0xFFE0F7FA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
+                          ),
+                        ),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -163,6 +168,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: 50.0,
                   margin: EdgeInsets.only(top: 10.0, bottom: 100),
                   child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        onPrimary: Color(0xFFE0F7FA),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32.0),
+                        ),
+                      ),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -188,18 +199,38 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.face_retouching_natural,
-                  size: 130,
+                Container(
+                  child: Icon(
+                    Icons.face_retouching_natural,
+                    size: 200,
+                  ),
                 ),
-                Text(
-                    "Welcome to FamiliarFace, please sign in"
+                Container(
+                  margin: EdgeInsets.only(bottom: 20.0),
+                  child: Text(
+                      "Welcome to FamiliarFace, please sign in:"
+                  ),
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      singInErrorCatcher();
-                    },
-                    child: Text("Sign in with Google")
+                Container(
+                  width: 250.0,
+                  height: 50.0,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        onPrimary: Color(0xFFE0F7FA),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32.0),
+                        ),
+                      ),
+                      onPressed: () {
+                        singInErrorCatcher();
+                      },
+                      child: Text(
+                          "Sign in with Google",
+                          style: TextStyle(
+                            fontSize: 22,
+                          )
+                      )
+                  ),
                 ),
               ],
             ),
@@ -483,6 +514,12 @@ class _SettingsPageState extends State<SettingsPage> {
                 height: 50.0,
                 margin: EdgeInsets.only(bottom: 10.0),
                 child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      onPrimary: Color(0xFFE0F7FA),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32.0),
+                      ),
+                    ),
                     onPressed: () {
                       imageSelectOptions();
                     },
@@ -499,6 +536,12 @@ class _SettingsPageState extends State<SettingsPage> {
                 height: 50.0,
                 margin: EdgeInsets.only(top: 10.0, bottom: 100),
                 child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      onPrimary: Color(0xFFE0F7FA),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32.0),
+                      ),
+                    ),
                     onPressed: () {
                       googleSignOut();
                     },
@@ -558,12 +601,24 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  onPrimary: Color(0xFFE0F7FA),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(32.0),
+                  ),
+                ),
                 onPressed: () async {
                   getImageGallery();
                 },
                 child: Text("Gallery")
             ),
             ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  onPrimary: Color(0xFFE0F7FA),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(32.0),
+                  ),
+                ),
                 onPressed: () async {
                   getImageCamera();
                 },
@@ -748,6 +803,12 @@ class _CreateClassState extends State<CreateClass> {
         width: 250.0,
         height: 50.0,
         child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            onPrimary: Color(0xFFE0F7FA),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(32.0),
+            ),
+          ),
           key: Key("submit_key"),
           onPressed: validateForm,
           child: Text(
@@ -820,6 +881,12 @@ class _CreateClassState extends State<CreateClass> {
               ),
             ),
             ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  onPrimary: Color(0xFFE0F7FA),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(32.0),
+                  ),
+                ),
                 onPressed: () async {
                   var dynamicLink = await generateDynamicLink(_class);
                   print(dynamicLink);
@@ -1003,6 +1070,12 @@ class _classViewState extends State<classView> {
                     height: 50.0,
                     margin: EdgeInsets.only(bottom: 10.0),
                     child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Color(0xFFE0F7FA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
+                          ),
+                        ),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -1023,6 +1096,12 @@ class _classViewState extends State<classView> {
                       height: 50.0,
                       margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                       child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            onPrimary: Color(0xFFE0F7FA),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(32.0),
+                            ),
+                          ),
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -1043,6 +1122,12 @@ class _classViewState extends State<classView> {
                       height: 50.0,
                       margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                       child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            onPrimary: Color(0xFFE0F7FA),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(32.0),
+                            ),
+                          ),
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -1063,6 +1148,12 @@ class _classViewState extends State<classView> {
                       height: 50.0,
                       margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                       child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            onPrimary: Color(0xFFE0F7FA),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(32.0),
+                            ),
+                          ),
                           onPressed: () async {
                             var dynamicLink = await generateDynamicLink(
                                 widget.class_.id);
@@ -1083,6 +1174,12 @@ class _classViewState extends State<classView> {
                       height: 50.0,
                       margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                       child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            onPrimary: Color(0xFFE0F7FA),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(32.0),
+                            ),
+                          ),
                           onPressed: () {
                             deleteClassWarning(context);
                           },
@@ -1119,6 +1216,12 @@ class _classViewState extends State<classView> {
                     height: 50.0,
                     margin: EdgeInsets.only(bottom: 10.0),
                     child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Color(0xFFE0F7FA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
+                          ),
+                        ),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -1139,6 +1242,12 @@ class _classViewState extends State<classView> {
                     height: 50.0,
                     margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                     child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Color(0xFFE0F7FA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
+                          ),
+                        ),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -1159,6 +1268,12 @@ class _classViewState extends State<classView> {
                     height: 50.0,
                     margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                     child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Color(0xFFE0F7FA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
+                          ),
+                        ),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -1179,6 +1294,12 @@ class _classViewState extends State<classView> {
                     height: 50.0,
                     margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                     child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Color(0xFFE0F7FA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
+                          ),
+                        ),
                         onPressed: () {
                           leaveClassWarning(context);
                         },
