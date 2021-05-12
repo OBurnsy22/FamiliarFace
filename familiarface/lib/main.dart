@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.cyan,
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        //https://www.codegrepper.com/code-examples/dart/set+width+to+elevatedbutton+flutter
       ),
       home: login(),
     );
