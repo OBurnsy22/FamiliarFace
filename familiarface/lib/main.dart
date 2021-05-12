@@ -513,7 +513,12 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       }
     }
-
+    setState(() {
+      print("Updating state after user has been added to class");
+      classesRetrieved = false;
+      allClasses.clear();
+      retrieveClasses();
+    });
   }
 
 }
