@@ -334,7 +334,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => classView(class_ : allClasses[index])),
-                                  );
+                                  ).then((value) {
+                                    setState(() {
+                                      print("In set state for class list view");
+                                      classesRetrieved = false;
+                                      allClasses.clear();
+                                      retrieveClasses();
+                                    });
+                                  });
                                 }
                             ),
                           );
@@ -802,17 +809,15 @@ class _CreateClassState extends State<CreateClass> {
     return Scaffold(
       backgroundColor: Color(0xFFE0F7FA),
       appBar: AppBar(
-        centerTitle: true,
-        actions: [
-          IconButton(
+        leading:IconButton(
             icon: Icon(
-              Icons.ac_unit_sharp,
+              Icons.arrow_back_rounded,
             ),
             onPressed: () {
               Navigator.pop(context);
             }
-          )
-        ],
+        ),
+        centerTitle: true,
         title: Text(
           'Create A Class',
           style: TextStyle(
@@ -1416,6 +1421,7 @@ class _classViewState extends State<classView> {
             TextButton(
               child: Text('Yes'),
               onPressed: () {
+                Navigator.pop(context);
                 deleteIndividualFromFirebase();
               },
             ),
@@ -1449,6 +1455,7 @@ class _classViewState extends State<classView> {
             TextButton(
               child: Text('Yes'),
               onPressed: () {
+                Navigator.pop(context);
                 deleteFromFirebase();
               },
             ),
@@ -1498,14 +1505,11 @@ class _classViewState extends State<classView> {
           'students': tempStudentList,
         })
             .then((value) => print("Students array updated for $cur_student"))
-            .catchError((error) => print(error))
+            .catchError((error) => print(error)),
+        print("Student has been removed from class"),
+        Navigator.pop(context)
       });
     }
-    //pop three times so we are back at the home page
-    int count = 0;
-    Navigator.popUntil(context, (route) {
-      return count++ == 3;
-    });
   }
 
   //deletes specified class from firebase
@@ -1522,13 +1526,9 @@ class _classViewState extends State<classView> {
           firestore.collection(tempStudentList[i]).doc(widget.class_.id).delete()
         },
       //delete the class from the class owners database
-      firestore.collection(globals.user.email).doc(widget.class_.id).delete()
-    });
-
-    //pop three times so we are back at the home page
-    int count = 0;
-    Navigator.popUntil(context, (route) {
-      return count++ == 3;
+      firestore.collection(globals.user.email).doc(widget.class_.id).delete(),
+      print("Class has been deleted"),
+      Navigator.pop(context),
     });
   }
 
