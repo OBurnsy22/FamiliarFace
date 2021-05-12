@@ -1595,7 +1595,7 @@ class scoreboardState extends State<scoreboard> {
           if(accuracy[0] == "1")
             {
               print("in case 1"),
-              accuracy == "100"
+              accuracy = "100"
             }
           else if(accuracy.length != 1)
             {
@@ -1855,9 +1855,12 @@ class matchingGameState extends State<matchingGame> {
   String currentSelectedAvatar = " ", currentSelectedName = " ";
   var avatarColorList, textColorList;
   bool avatarSelected = false, textSelected = false, initialized = false;
-  //vars for keeping track of game stats
+  //vars for updating the scoreboard
   int gamesPlayed, correctGuess, totalGuess;
   String accuracy;
+  //vars for keeping track of score for this particular game
+  int oneTimeCorrect = 0, oneTimeTotal = 0;
+  String oneTimeAccuracy;
 
   void splitMap () {
     widget.classUserData.forEach((key, value) {
@@ -2002,8 +2005,9 @@ class matchingGameState extends State<matchingGame> {
   /*this function will check if the users selected avatar lines up with
   the corresponding name. It will also update the game data map respectively
    */
-  void selectionValidation() {
+  void selectionValidation() async {
     totalGuess += 1;
+    oneTimeTotal += 1;
     /*
       if they guessed correctly, remove the corresponding name and url
       from their respective lists
@@ -2014,6 +2018,7 @@ class matchingGameState extends State<matchingGame> {
       studentNames.remove(currentSelectedName);
       studentPhotoURLS.remove(currentSelectedAvatar);
       correctGuess += 1;
+      oneTimeCorrect += 1;
     }
     else
     {
@@ -2036,7 +2041,63 @@ class matchingGameState extends State<matchingGame> {
     {
       updateGameStats();
       Navigator.pop(context);
+      await endGameStats();
+      //reset game vars
+      oneTimeAccuracy = " ";
+      oneTimeCorrect = 0;
+      oneTimeTotal = 0;
     }
+  }
+
+  Future<void> endGameStats() {
+    oneTimeAccuracy = (oneTimeCorrect / oneTimeTotal).toString();
+    if(oneTimeAccuracy.length <= 3)
+    {
+      if(oneTimeAccuracy[0] == "1")
+      {
+        print("in case 1");
+        oneTimeAccuracy = "100";
+      }
+      else if(accuracy.length != 1)
+      {
+        print("in case 2");
+        oneTimeAccuracy = oneTimeAccuracy.substring(2);
+        oneTimeAccuracy += "0";
+      }
+    }
+    //case 3, its a very long repeating value
+    else
+    {
+      print("in case 3");
+      print(oneTimeAccuracy);
+      oneTimeAccuracy = oneTimeAccuracy.substring(2,4);
+    }
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Score!'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Accuracy: $oneTimeAccuracy'+"%"),
+                Text('Correct Guesses: $oneTimeCorrect'),
+                Text('Total Guesses: $oneTimeTotal')
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Okay'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> updateGameStats() {
