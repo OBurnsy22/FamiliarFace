@@ -416,6 +416,33 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Future<void> alreadyInClass() {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('ERROR:'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('You are already enrolled in this class.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Understood'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   Future<void> addUserToClass(String deepLink) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -449,8 +476,14 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
 
-    //add the user who was invited to the array
     final List studentsList = userInvClassData["students"];
+    //ensure the user who is accepting the link isn't already in the class
+    if(studentsList.contains(globals.user.email))
+      {
+        alreadyInClass();
+        return;
+      }
+    //add the user who was invited to the array
     studentsList.add(globals.user.email);
     //update the senders student array in their database for this class
     firestore
