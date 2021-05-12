@@ -1916,40 +1916,43 @@ class matchingGameState extends State<matchingGame> {
           itemCount: studentNames.length,
           itemBuilder: (context, index) {
             String name = studentNames[index];
-            return Container(
-              height: 100,
+            return SizedBox(
+              height: 115,
               child: ListTile(
-                leading: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      currentSelectedAvatar = studentPhotoURLS[index];
-                      if(avatarColorList[index] == Colors.white)
-                      {
-                        for(int i=0; i<avatarColorList.length; i++)
+                title: Align(
+                  alignment: Alignment.centerLeft,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        currentSelectedAvatar = studentPhotoURLS[index];
+                        if(avatarColorList[index] == Colors.white)
                         {
-                          avatarColorList[i] = Colors.white;
+                          for(int i=0; i<avatarColorList.length; i++)
+                          {
+                            avatarColorList[i] = Colors.white;
+                          }
+                          avatarColorList[index] = Colors.green;
+                          avatarSelected = true;
                         }
-                        avatarColorList[index] = Colors.green;
-                        avatarSelected = true;
-                      }
-                      else{
-                        avatarColorList[index] = Colors.white;
-                        avatarSelected = false;
-                      }
-                      //check if there is a selection on both sides
-                      if(avatarSelected && textSelected)
-                      {
-                        selectionValidation();
-                      }
-                    });
-                  },
-                  child: CircleAvatar(
-                      radius: 50,
-                      backgroundColor: avatarColorList[index],
-                      child: CircleAvatar(
-                        radius: 25,
-                        backgroundImage: NetworkImage(studentPhotoURLS[index]),
-                      )
+                        else{
+                          avatarColorList[index] = Colors.white;
+                          avatarSelected = false;
+                        }
+                        //check if there is a selection on both sides
+                        if(avatarSelected && textSelected)
+                        {
+                          selectionValidation();
+                        }
+                      });
+                    },
+                    child: CircleAvatar(
+                        radius: 50,
+                        backgroundColor: avatarColorList[index],
+                        child: CircleAvatar(
+                          radius: 45,
+                          backgroundImage: NetworkImage(studentPhotoURLS[index]),
+                        )
+                    ),
                   ),
                 ),
                 trailing: GestureDetector(
