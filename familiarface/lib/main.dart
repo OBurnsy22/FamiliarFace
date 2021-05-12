@@ -33,8 +33,6 @@ class MyApp extends StatelessWidget {
 
 /* CLASSES FOR LOGIN START */
 class login extends StatefulWidget {
-
-
   @override
   loginState createState() => loginState();
 }
@@ -228,7 +226,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
-  @override     // This method is rerun every time setState is called, for instance as done
+  @override
   Widget build(BuildContext context) {
     if(classesRetrieved)
       {
@@ -253,9 +251,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => SettingsPage()),
-                  );
+                  ).then((value) => setState(() {}));
                 }
-                ,),
+                //Navigator.push(context,MaterialPageRoute(builder: (context) => Page2())).then((value) { setState(() {});
+              ),
             ],
           ),
           body: Center(
@@ -282,11 +281,17 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.cyan.shade800,
                         ),
                       ),
-                      onPressed: () {
+                      onPressed:() {
                         Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => CreateClass()),
-                        );
+                         context,
+                         MaterialPageRoute(builder: (context) => CreateClass())
+                        ).then((value) {
+                          setState(() {
+                            classesRetrieved = false;
+                            allClasses.clear();
+                            retrieveClasses();
+                          });
+                        });
                       },
                       child: Text(
                         "Create A Class",
@@ -798,6 +803,16 @@ class _CreateClassState extends State<CreateClass> {
       backgroundColor: Color(0xFFE0F7FA),
       appBar: AppBar(
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.ac_unit_sharp,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            }
+          )
+        ],
         title: Text(
           'Create A Class',
           style: TextStyle(
