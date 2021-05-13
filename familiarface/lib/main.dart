@@ -75,55 +75,55 @@ class loginState extends State<login> {
   @override
   Widget build(BuildContext context){
     if(_initialized)
-      {
-        return Scaffold(
-          backgroundColor: Color(0xFFE0F7FA),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  child: Icon(
-                    Icons.face_retouching_natural,
-                    size: 200,
-                  ),
+    {
+      return Scaffold(
+        backgroundColor: Color(0xFFE0F7FA),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                child: Icon(
+                  Icons.face_retouching_natural,
+                  size: 200,
                 ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 20.0),
-                  child: Text(
-                      "Welcome to FamiliarFace, please sign in:"
-                  ),
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: 20.0),
+                child: Text(
+                    "Welcome to FamiliarFace, please sign in:"
                 ),
-                Container(
-                  width: 250.0,
-                  height: 50.0,
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        onPrimary: Color(0xFFE0F7FA),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32.0),
-                        ),
-                        side: BorderSide(
-                          width: 3,
-                          color: Colors.cyan.shade800,
-                        ),
+              ),
+              Container(
+                width: 250.0,
+                height: 50.0,
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      onPrimary: Color(0xFFE0F7FA),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32.0),
                       ),
-                      onPressed: () {
-                        singInErrorCatcher();
-                      },
-                      child: Text(
-                          "Sign in with Google",
-                          style: TextStyle(
-                            fontSize: 22,
-                          )
-                      )
-                  ),
+                      side: BorderSide(
+                        width: 3,
+                        color: Colors.cyan.shade800,
+                      ),
+                    ),
+                    onPressed: () {
+                      singInErrorCatcher();
+                    },
+                    child: Text(
+                        "Sign in with Google",
+                        style: TextStyle(
+                          fontSize: 22,
+                        )
+                    )
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-      } else { //firebase is not initialized
+        ),
+      );
+    } else { //firebase is not initialized
       return CircularProgressIndicator(
         backgroundColor: Color(0xFFE0F7FA),
       );
@@ -137,8 +137,8 @@ class loginState extends State<login> {
     try{
       await googleSignIn();
       Navigator.push(
-           context,
-          MaterialPageRoute(builder: (context) => MyHomePage()),
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage()),
       );
     } catch(error) {
       print(error);
@@ -228,19 +228,19 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     if(classesRetrieved)
-      {
-        return Scaffold(
-          backgroundColor: Color(0xFFE0F7FA),
-          appBar: AppBar(
-            centerTitle: true,
-            title: Text(
-              "FamiliarFace",
-              style: TextStyle(
-                  fontSize: 30
-              ),
+    {
+      return Scaffold(
+        backgroundColor: Color(0xFFE0F7FA),
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            "FamiliarFace",
+            style: TextStyle(
+                fontSize: 30
             ),
-            actions: <Widget>[
-              IconButton(
+          ),
+          actions: <Widget>[
+            IconButton(
                 icon: Icon(
                   Icons.settings,
                   color: Colors.white,
@@ -252,55 +252,55 @@ class _MyHomePageState extends State<MyHomePage> {
                     MaterialPageRoute(builder: (context) => SettingsPage()),
                   ).then((value) => setState(() {}));
                 }
-                //Navigator.push(context,MaterialPageRoute(builder: (context) => Page2())).then((value) { setState(() {});
+              //Navigator.push(context,MaterialPageRoute(builder: (context) => Page2())).then((value) { setState(() {});
+            ),
+          ],
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                child: Icon(
+                  Icons.face_retouching_natural,
+                  size: 230,
+                ),
               ),
-            ],
-          ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  child: Icon(
-                    Icons.face_retouching_natural,
-                    size: 230,
-                  ),
-                ),
-                Container(
-                  width: 250.0,
-                  height: 50.0,
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        onPrimary: Color(0xFFE0F7FA),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32.0),
-                        ),
-                        side: BorderSide(
-                          width: 3,
-                          color: Colors.cyan.shade800,
-                        ),
+              Container(
+                width: 250.0,
+                height: 50.0,
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      onPrimary: Color(0xFFE0F7FA),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32.0),
                       ),
-                      onPressed:() {
-                        Navigator.push(
-                         context,
-                         MaterialPageRoute(builder: (context) => CreateClass())
-                        ).then((value) {
-                          setState(() {
-                            classesRetrieved = false;
-                            allClasses.clear();
-                            retrieveClasses();
-                          });
+                      side: BorderSide(
+                        width: 3,
+                        color: Colors.cyan.shade800,
+                      ),
+                    ),
+                    onPressed:() {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => CreateClass())
+                      ).then((value) {
+                        setState(() {
+                          classesRetrieved = false;
+                          allClasses.clear();
+                          retrieveClasses();
                         });
-                      },
-                      child: Text(
-                        "Create A Class",
-                        style: TextStyle(
-                          fontSize: 22,
-                        ),
-                      )
-                  ),
+                      });
+                    },
+                    child: Text(
+                      "Create A Class",
+                      style: TextStyle(
+                        fontSize: 22,
+                      ),
+                    )
                 ),
-                Container(
+              ),
+              Container(
                   margin: EdgeInsets.only(top: 10, bottom: 10),
                   child: Text(
                     "My Classes",
@@ -308,52 +308,52 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontSize: 22,
                     ),
                   )
-                ),
-                Expanded(
+              ),
+              Expanded(
                   child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
+                      decoration: BoxDecoration(
+                        border: Border.all(
                           color: Colors.cyan.shade800,
                           width: 3,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                        color: Colors.cyan,
                       ),
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      color: Colors.cyan,
-                    ),
-                    child: SizedBox(
-                      width: 270.0,
-                      child: ListView.builder(
-                        //shrinkWrap: true,
-                        itemCount: allClasses.length,
-                        itemBuilder: (context, index) {
-                          var name = allClasses[index];
-                          return Card(
-                            child:ListTile(
-                                title: Text(name.id.substring(0, name.id.length-7)),
-                                onTap:() {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => classView(class_ : allClasses[index])),
-                                  ).then((value) {
-                                    setState(() {
-                                      print("In set state for class list view");
-                                      classesRetrieved = false;
-                                      allClasses.clear();
-                                      retrieveClasses();
+                      child: SizedBox(
+                        width: 270.0,
+                        child: ListView.builder(
+                          //shrinkWrap: true,
+                          itemCount: allClasses.length,
+                          itemBuilder: (context, index) {
+                            var name = allClasses[index];
+                            return Card(
+                              child:ListTile(
+                                  title: Text(name.id.substring(0, name.id.length-7)),
+                                  onTap:() {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => classView(class_ : allClasses[index])),
+                                    ).then((value) {
+                                      setState(() {
+                                        print("In set state for class list view");
+                                        classesRetrieved = false;
+                                        allClasses.clear();
+                                        retrieveClasses();
+                                      });
                                     });
-                                  });
-                                }
-                            ),
-                          );
-                        },
-                      ),
-                    )
+                                  }
+                              ),
+                            );
+                          },
+                        ),
+                      )
                   )
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-      } else { //classes havn't been retrieved yet
+        ),
+      );
+    } else { //classes havn't been retrieved yet
       return CircularProgressIndicator(
         backgroundColor: Color(0xFFE0F7FA),
       );
@@ -478,10 +478,10 @@ class _MyHomePageState extends State<MyHomePage> {
     final List studentsList = userInvClassData["students"];
     //ensure the user who is accepting the link isn't already in the class
     if(studentsList.contains(globals.user.email))
-      {
-        alreadyInClass();
-        return;
-      }
+    {
+      alreadyInClass();
+      return;
+    }
     //add the user who was invited to the array
     studentsList.add(globals.user.email);
     //update the senders student array in their database for this class
@@ -1292,8 +1292,23 @@ class _classViewState extends State<classView> {
                         )
                     ),
                   ),
+
                 ]
             ),
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => setIcon()),
+              ).then((value) => setState(() {}));
+              },
+              label: Text(
+                  'Set Icon',
+                  style: TextStyle(
+                    color: Color(0xFFE0F7FA),
+                  ),
+              ),
           ),
         );
       } else{ //user is not the owner of this class
@@ -1597,6 +1612,79 @@ class _classViewState extends State<classView> {
 /* CLASSES FOR CLASS VIEW END */
 
 
+/* CLASSES FOR SET ICON START */
+class setIcon extends StatefulWidget {
+  @override
+  setIconState createState() => setIconState();
+}
+
+class setIconState extends State<setIcon> {
+  List presetIcons = [
+    Icons.science, Icons.search,
+    Icons.computer, Icons.library_books,
+    Icons.edit_sharp, Icons.enhance_photo_translate_sharp,
+    Icons.format_paint_sharp, Icons.gavel_rounded,
+    Icons.grading, Icons.history,
+    Icons.run_circle, Icons.language,
+    Icons.add_business, Icons.attach_money_sharp,
+    Icons.fastfood_rounded, Icons.multiline_chart,
+    Icons.movie_sharp, Icons.mouse,
+    Icons.mobile_friendly, Icons.miscellaneous_services
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context)
+  {
+    return Scaffold(
+      backgroundColor: Color(0xFFE0F7FA),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          "Select Icon",
+          style: TextStyle(
+            fontSize: 30
+          )
+        )
+      ),
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 200,
+            childAspectRatio: 3 / 2,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20),
+        itemCount: presetIcons.length,
+        itemBuilder: (BuildContext ctx, index) {
+          return Container(
+            width: 45,
+            height: 70,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.cyan.shade800,
+                width: 5,
+              ),
+              color: Colors.cyan,
+            ),
+            child: Icon(
+              presetIcons[index],
+              size: 60,
+              color: Color(0xFFE0F7FA),
+            )
+          );
+        },
+      )
+    );
+  }
+}
+
+/* CLASSES FOR SET ICON END */
+
+
 /* CLASSES FOR SCOREBOARD START */
 
 class scoreboard extends StatefulWidget {
@@ -1848,9 +1936,9 @@ class rosterState extends State<roster> {
                   ),
                 ),
                 trailing: Text(
-                    name.substring(0, name.length-7),
-                    style: TextStyle(
-                      fontSize: 20,
+                  name.substring(0, name.length-7),
+                  style: TextStyle(
+                    fontSize: 20,
                   ),
                 ),
               ),
