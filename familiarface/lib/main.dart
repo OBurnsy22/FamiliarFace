@@ -194,7 +194,18 @@ class _MyHomePageState extends State<MyHomePage> {
           final Uri deepLink = dynamicLink?.link;
           if (deepLink != null) { //THIS IF WILL CATCH THE DEEP LINK
             print(deepLink);
-            addUserToClass(deepLink.toString());
+            //if the user is not signed in, set the bool and save the link string
+            print(globals.signedIn);
+            if(!globals.signedIn)
+              {
+                globals.loginDynamicLink = deepLink.toString();
+                globals.caughtInSignIn = true;
+              }
+            //else the user is already signed in, so pass the link to the function
+            else
+              {
+                addUserToClass(deepLink.toString());
+              }
           }
         },
         onError: (OnLinkErrorException e) async {
@@ -223,10 +234,37 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    initDynamicLinks();
-    retrieveClasses();
     super.initState();
+    print("In init state for home page");
+    /*
+    if(globals.caughtInSignIn)
+      {
+        addUserToClass(globals.loginDynamicLink);
+        globals.caughtInSignIn = false;
+      }
+    else
+      {
+        initDynamicLinks();
+      }
+    retrieveClasses();*/
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if(globals.caughtInSignIn)
+    {
+      WidgetsBinding.instance
+        .addPostFrameCallback((_) => addUserToClass(globals.loginDynamicLink));
+      globals.caughtInSignIn = false;
+    }
+    else
+    {
+      initDynamicLinks();
+    }
+    retrieveClasses();
+  }
+
 
   @override
   Widget build(BuildContext context) {
