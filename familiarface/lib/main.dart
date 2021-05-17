@@ -1344,7 +1344,7 @@ class _classViewState extends State<classView> {
                 ]
             ),
           ),
-          floatingActionButton: FloatingActionButton.extended(
+          /*floatingActionButton: FloatingActionButton.extended(
             onPressed: () {
               Navigator.push(
                 context,
@@ -1357,7 +1357,7 @@ class _classViewState extends State<classView> {
                     color: Color(0xFFE0F7FA),
                   ),
               ),
-          ),
+          ),*/
         );
       } else{ //user is not the owner of this class
         return Scaffold(
@@ -1494,7 +1494,7 @@ class _classViewState extends State<classView> {
                 ]
             ),
           ),
-          floatingActionButton: FloatingActionButton.extended(
+          /*floatingActionButton: FloatingActionButton.extended(
             onPressed: () {
               Navigator.push(
                 context,
@@ -1507,7 +1507,7 @@ class _classViewState extends State<classView> {
                 color: Color(0xFFE0F7FA),
               ),
             ),
-          ),
+          ),*/
         );
       }
     } else {
