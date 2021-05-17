@@ -184,6 +184,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<QueryDocumentSnapshot> allClasses = [];
+  List <IconData> allClassesIcons = [];
   bool classesRetrieved = false;
 
   //handles dynamic links
@@ -210,6 +211,8 @@ class _MyHomePageState extends State<MyHomePage> {
     QuerySnapshot snap = await FirebaseFirestore.instance.collection(globals.user.email).get();
     //loops through all documents, appending their names to the myDocs list
     snap.docs.forEach((element) {
+      var icon = element.get("classIcon");
+      //allClassesIcons.add(icon);
       allClasses.add(element);
     });
     print(allClasses.length);
@@ -328,6 +331,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             var name = allClasses[index];
                             return Card(
                               child:ListTile(
+                                  /*leading: Icon(
+                                    allClassesIcons[index],
+                                  ),*/
                                   title: Text(name.id.substring(0, name.id.length-7)),
                                   onTap:() {
                                     Navigator.push(
@@ -525,6 +531,7 @@ class _MyHomePageState extends State<MyHomePage> {
             'students': tempStudentsList,
             'similarEmails': userInvClassData['similarEmails'],
             'gamesPlayed': 0,
+            'classIcon':" "
           })
               .then((value) =>
               print("Class database created for link receiver"))
@@ -742,6 +749,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 onPressed: () async {
                   getImageGallery();
+                  Navigator.of(context).pop();
                 },
                 child: Text("Gallery")
             ),
@@ -758,6 +766,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 onPressed: () async {
                   getImageCamera();
+                  Navigator.of(context).pop();
                 },
                 child: Text("Camera")
             ),
@@ -998,6 +1007,7 @@ class _CreateClassState extends State<CreateClass> {
       'students' : [],
       'similarEmails': _checkbox,
       'gamesPlayed' : 0,
+      'classIcon':" "
     })
         .then((value) => print("Class added to database"))
         .catchError((error) => print(error));
@@ -1444,6 +1454,20 @@ class _classViewState extends State<classView> {
                     ),
                   ),
                 ]
+            ),
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => setIcon()),
+              ).then((value) => setState(() {}));
+            },
+            label: Text(
+              'Set Icon',
+              style: TextStyle(
+                color: Color(0xFFE0F7FA),
+              ),
             ),
           ),
         );
