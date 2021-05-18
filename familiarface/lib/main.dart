@@ -192,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
           final Uri deepLink = dynamicLink?.link;
-          if (deepLink != null) { //THIS IF WILL CATCH THE DEEP LINK
+          if (deepLink != null) {
             print(deepLink);
             //if the user is not signed in, set the bool and save the link string
             print(globals.signedIn);
@@ -236,17 +236,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     print("In init state for home page");
-    /*
-    if(globals.caughtInSignIn)
-      {
-        addUserToClass(globals.loginDynamicLink);
-        globals.caughtInSignIn = false;
-      }
-    else
-      {
-        initDynamicLinks();
-      }
-    retrieveClasses();*/
   }
 
   @override
@@ -262,6 +251,7 @@ class _MyHomePageState extends State<MyHomePage> {
     {
       initDynamicLinks();
     }
+    allClasses.clear();
     retrieveClasses();
   }
 
